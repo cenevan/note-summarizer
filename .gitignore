@@ -1,0 +1,21 @@
+# .gitignore
+
+# Node (frontend)
+node_modules/
+dist/
+build/
+.env
+
+# Python (backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+venv/
+.env
+
+# OS
+.DS_Store
+
