@@ -19,3 +19,7 @@ async def upload_note(file: UploadFile = File(...), db: Session = Depends(get_db
     summary, action_items = summarize_text(content)
     db_note = crud.create_note(db, file.filename, content, summary, action_items)
     return {"summary": summary, "action_items": action_items}
+
+@app.get("/notes/", response_model=list[schemas.Note])
+def get_notes(db: Session = Depends(get_db)):
+    return crud.get_all_notes(db)

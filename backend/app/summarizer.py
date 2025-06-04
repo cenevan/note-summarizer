@@ -1,17 +1,27 @@
-import openai
 import os
+from openai import OpenAI
+from dotenv import load_dotenv
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+load_dotenv()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def summarize_text(text: str):
-    prompt = f"Summarize the following text and extract action items:\n\n{text}"
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.5
+
+    """
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Summarize this note and extract action items."},
+            {"role": "user", "content": text}
+        ],
+        temperature=0.7,
     )
-    output = response.choices[0].message.content
-    parts = output.split("Action Items:")
-    summary = parts[0].strip()
-    action_items = parts[1].strip() if len(parts) > 1 else ""
-    return summary, action_items
+
+    content = response.choices[0].message.content
+    """
+
+    # Placeholder for actual OpenAI API call
+    content = "Summarized content of the note" 
+    action_items = "Extracted action items" 
+
+    return content, action_items
