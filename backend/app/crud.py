@@ -16,3 +16,11 @@ def create_note(db: Session, filename: str, content: str, summary: str, action_i
 
 def get_all_notes(db: Session) -> list[models.Note]:
     return db.query(models.Note).all()
+
+def delete_note(db: Session, note_id: int) -> None:
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    if note:
+        db.delete(note)
+        db.commit()
+    else:
+        raise ValueError("Note not found")

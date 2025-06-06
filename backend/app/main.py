@@ -23,3 +23,8 @@ async def upload_note(file: UploadFile = File(...), db: Session = Depends(get_db
 @app.get("/notes/", response_model=list[schemas.Note])
 def get_notes(db: Session = Depends(get_db)):
     return crud.get_all_notes(db)
+
+@app.delete("/notes/{note_id}")
+def delete_note(note_id: int, db: Session = Depends(get_db)):
+    crud.delete_note(db, note_id)
+    return {"message": "Note deleted successfully"}

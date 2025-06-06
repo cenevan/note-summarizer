@@ -20,22 +20,38 @@ export default function MyNotes() {
       .catch(() => console.error("Failed to fetch notes"));
   }, []);
 
+  const deleteNote = async (id: number) => {
+    const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setNotes(notes.filter(note => note.id !== id));
+    } else {
+      alert("Failed to delete note.");
+    }
+  };
+
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>📚 My Notes</h1>
-      <Link to="/">← Back to Home</Link> | <Link to="/upload">Upload a Note</Link>
+    <div className="min-h-screen bg-gray-900 text-white text-center p-8 font-sans">
+      <h1 className="text-4xl font-bold text-primary mb-4">📚 My Notes</h1>
+      <div className="mb-6 space-x-4">
+        <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
+        <Link to="/upload" className="text-blue-400 hover:underline">Upload a Note</Link>
+      </div>
 
       {notes.length === 0 ? (
         <p>No notes found.</p>
       ) : (
-        notes.map((note) => (
-          <NoteCard
-            key={note.id}
-            filename={note.filename}
-            summary={note.summary}
-            actionItems={note.action_items}
-          />
-        ))
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {notes.map((note) => (
+            <NoteCard
+              noteId={note.id}
+              filename={note.filename}
+              summary={note.summary}
+              actionItems={note.action_items}
+              onDelete={deleteNote}
+              key={note.id}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
