@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 
 interface Note {
   id: number;
-  filename: string;
+  name: string;
   content: string;
   summary: string;
   action_items: string;
@@ -58,7 +58,7 @@ export default function DisplayNote() {
       <Link to="/notes" className="text-blue-400 hover:underline mb-4 inline-block">
         ← Back to My Notes
       </Link>
-      <h1 className="text-4xl font-bold text-primary mb-6">{note.filename}</h1>
+      <h1 className="text-4xl font-bold text-primary mb-6">{note.name}</h1>
 
       <div className="max-w-4xl bg-gray-700 mx-auto text-left space-y-8 p-6 rounded-lg shadow-md">
         <section>

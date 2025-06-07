@@ -2,9 +2,9 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 
-def create_note(db: Session, filename: str, content: str, summary: str, action_items: str) -> models.Note:
+def create_note(db: Session, title: str, content: str, summary: str, action_items: str) -> models.Note:
     note = models.Note(
-        filename=filename,
+        name=title,
         content=content,
         summary=summary,
         action_items=action_items

@@ -4,7 +4,7 @@ import NoteCard from "../components/NoteCard";
 
 interface Note {
   id: number;
-  filename: string;
+  name: string;
   content: string;
   summary: string;
   action_items: string;
@@ -44,7 +44,7 @@ export default function MyNotes() {
           {notes.map((note) => (
             <NoteCard
               noteId={note.id}
-              filename={note.filename}
+              name={note.name}
               summary={note.summary}
               actionItems={note.action_items}
               onDelete={deleteNote}

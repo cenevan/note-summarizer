@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 class NoteBase(BaseModel):
-    filename: str
+    name: str
     content: str
     summary: str
     action_items: str

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 interface Props {
   noteId: number;
-  filename: string;
+  name: string;
   summary: string;
   actionItems: string;
   onDelete: (noteId: number) => void;
@@ -12,7 +12,7 @@ interface Props {
 
 const NoteCard: React.FC<Props> = ({
   noteId,
-  filename,
+  name,
   summary,
   actionItems,
   onDelete,
@@ -23,7 +23,7 @@ const NoteCard: React.FC<Props> = ({
   return (
     <div className="bg-gray-700 dark:bg-secondary p-6 rounded-lg shadow-md text-gray-900 dark:text-white font-sans transition-all duration-300 hover:shadow-lg">
       <h3 className="text-2xl font-bold text-primary leading-tight mb-2 break-words">
-        {filename}
+        {name}
       </h3>
 
       {expanded && !expandLink && (
