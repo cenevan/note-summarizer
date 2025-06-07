@@ -11,16 +11,25 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [noteTitle, setNoteTitle] = useState("Untitled Note");
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
+    if (!file) return;
+    setShowModal(true);
+  };
+
+  const submitUpload = async () => {
     if (!file) return;
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("title", noteTitle);
 
     setLoading(true);
     setResult(null);
     setError(null);
+    setShowModal(false);
 
     try {
       const res = await fetch("http://localhost:8000/upload/", {
@@ -89,6 +98,35 @@ export default function UploadPage() {
               <li key={idx}>{item}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
+          <div className="bg-white text-black rounded-md p-6 w-96">
+            <h2 className="text-xl font-semibold mb-4">Name Your Note</h2>
+            <input
+              type="text"
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md mb-4"
+              placeholder="Untitled Note"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded-md bg-gray-300 text-black"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitUpload}
+                className="px-4 py-2 rounded-md bg-blue-500 text-white"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
