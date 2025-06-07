@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import UploadPage from "./pages/UploadPage.tsx";
 import MyNotes from "./pages/MyNotes.tsx";
+import DisplayNote from "./pages/DisplayNote.tsx";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         />
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/notes" element={<MyNotes />} />
+        <Route path="/notes/:id" element={<DisplayNote />} />
       </Routes>
     </Router>
   );

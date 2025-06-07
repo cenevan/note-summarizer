@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   noteId: number;
@@ -6,6 +7,7 @@ interface Props {
   summary: string;
   actionItems: string;
   onDelete: (noteId: number) => void;
+  expandLink?: string;
 }
 
 const NoteCard: React.FC<Props> = ({
@@ -14,6 +16,7 @@ const NoteCard: React.FC<Props> = ({
   summary,
   actionItems,
   onDelete,
+  expandLink,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -23,7 +26,7 @@ const NoteCard: React.FC<Props> = ({
         {filename}
       </h3>
 
-      {expanded && (
+      {expanded && !expandLink && (
         <div className="transition-all duration-300">
           <p className="underline uppercase text-sm text-accent font-semibold tracking-wide mb-1">
             Summary
@@ -42,12 +45,21 @@ const NoteCard: React.FC<Props> = ({
       )}
 
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mt-4">
-        <button
-          className="text-sm text-blue-400 hover:text-blue-600 transition"
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "− Collapse" : "+ Expand"}
-        </button>
+        {expandLink ? (
+          <Link
+            to={expandLink}
+            className="text-sm text-blue-400 hover:text-blue-600 transition"
+          >
+            + Expand
+          </Link>
+        ) : (
+          <button
+            className="text-sm text-blue-400 hover:text-blue-600 transition"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "− Collapse" : "+ Expand"}
+          </button>
+        )}
 
         <button
           onClick={() => onDelete(noteId)}

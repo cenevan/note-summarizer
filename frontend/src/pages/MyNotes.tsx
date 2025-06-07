@@ -49,6 +49,7 @@ export default function MyNotes() {
               actionItems={note.action_items}
               onDelete={deleteNote}
               key={note.id}
+              expandLink={`/notes/${note.id}`}
             />
           ))}
         </div>

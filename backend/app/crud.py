@@ -24,3 +24,6 @@ def delete_note(db: Session, note_id: int) -> None:
         db.commit()
     else:
         raise ValueError("Note not found")
+    
+def get_note_by_id(db: Session, note_id: int) -> models.Note | None:
+    return db.query(models.Note).filter(models.Note.id == note_id).first()

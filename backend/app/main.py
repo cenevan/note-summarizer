@@ -28,3 +28,10 @@ def get_notes(db: Session = Depends(get_db)):
 def delete_note(note_id: int, db: Session = Depends(get_db)):
     crud.delete_note(db, note_id)
     return {"message": "Note deleted successfully"}
+
+@app.get("/notes/{note_id}", response_model=schemas.Note)
+def get_note(note_id: int, db: Session = Depends(get_db)):
+    note = crud.get_note_by_id(db, note_id)
+    if not note:
+        return {"error": "Note not found"}
+    return note
