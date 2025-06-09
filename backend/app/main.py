@@ -39,3 +39,26 @@ def get_note(note_id: int, db: Session = Depends(get_db)):
     if not note:
         return {"error": "Note not found"}
     return note
+
+@app.put("/notes/{note_id}", response_model=schemas.Note)
+def update_note(
+    note_id: int,
+    request: schemas.NoteUpdate,
+    db: Session = Depends(get_db)
+):
+    summary, action_items = summarize_text(request.content)
+    updated_note = crud.update_note(db, note_id, None, request.content, summary, action_items)
+    if not updated_note:
+        return {"error": "Note not found"}
+    return updated_note
+
+@app.put("/notes/{note_id}/name", response_model=schemas.Note)
+def update_note_name(
+    note_id: int,
+    request: schemas.NoteUpdate,
+    db: Session = Depends(get_db)
+):
+    updated_note = crud.update_note(db, note_id, title=request.name)
+    if not updated_note:
+        return {"error": "Note not found"}
+    return updated_note

@@ -15,3 +15,12 @@ class Note(NoteBase):
 
     class Config:
         orm_mode = True
+
+class NoteUpdate(BaseModel):
+    name: str | None = None
+    content: str | None = None
+    summary: str | None = None
+    action_items: str | None = None
+
+    class Config:
+        orm_mode = True

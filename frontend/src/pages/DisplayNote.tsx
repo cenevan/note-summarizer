@@ -16,6 +16,29 @@ export default function DisplayNote() {
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState("");
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [editedName, setEditedName] = useState("");
+
+  const changeName = async (editedName: string) => {
+    if (!note) {
+      console.error("Note is null, cannot change name");
+      return;
+    }
+    const res = await fetch(`http://localhost:8000/notes/${note.id}/name`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editedName }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setNote(updated);
+      setIsRenaming(false);
+    } else {
+      alert("Failed to rename note.");
+    }
+  }
 
   useEffect(() => {
     console.log("Fetching note with id:", id);
@@ -29,6 +52,7 @@ export default function DisplayNote() {
       .then((data) => {
         console.log("Fetched note data:", data);
         setNote(data);
+        setEditedName(data.name);
         setLoading(false);
       })
       .catch((err) => {
@@ -58,12 +82,90 @@ export default function DisplayNote() {
       <Link to="/notes" className="text-blue-400 hover:underline mb-4 inline-block">
         ← Back to My Notes
       </Link>
-      <h1 className="text-4xl font-bold text-primary mb-6">{note.name}</h1>
+      {isRenaming ? (
+        <div className="flex justify-center items-center gap-2 mb-6">
+          <input
+            className="text-4xl font-bold text-primary bg-transparent border-b border-primary focus:outline-none text-center"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            autoFocus
+          />
+          <button
+            onClick={() => changeName(editedName)}
+            className="text-sm text-green-600 hover:text-green-800 px-4 py-2 bg-gray-700 rounded-md"
+            title="Save Name"
+          >
+            Save
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center gap-2 mb-6">
+          <h1 className="text-4xl font-bold text-primary">{note.name}</h1>
+          <button
+            onClick={() => setIsRenaming(true)}
+            className="text-sm text-accent hover:text-white"
+            title="Rename Note"
+          >
+            ✏️
+          </button>
+        </div>
+      )}
 
       <div className="max-w-4xl bg-gray-700 mx-auto text-left space-y-8 p-6 rounded-lg shadow-md">
         <section>
           <h2 className="text-xl font-semibold text-accent mb-2">Original Content</h2>
-          <p className="text-gray-300 whitespace-pre-wrap">{note.content}</p>
+          {isEditing ? (
+            <div className="space-y-4">
+              <textarea
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                className="w-full p-4 text-white rounded-md bg-gray-800 border border-gray-600 resize-y"
+                rows={10}
+              />
+              <div className="space-x-4">
+                <button
+                  onClick={async () => {
+                    const res = await fetch(`http://localhost:8000/notes/${note.id}`, {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ content: editedContent }),
+                    });
+                    if (res.ok) {
+                      const updated = await res.json();
+                      setNote(updated);
+                      setIsEditing(false);
+                    } else {
+                      alert("Failed to update note.");
+                    }
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+                {note.content}
+              </div>
+              <button
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditedContent(note.content);
+                }}
+                className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+              >
+                Edit Original Text
+              </button>
+            </>
+          )}
         </section>
         <section>
           <h2 className="text-xl font-semibold text-accent mb-2">Summary</h2>

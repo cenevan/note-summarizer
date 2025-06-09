@@ -27,3 +27,28 @@ def delete_note(db: Session, note_id: int) -> None:
     
 def get_note_by_id(db: Session, note_id: int) -> models.Note | None:
     return db.query(models.Note).filter(models.Note.id == note_id).first()
+
+def update_note(
+    db: Session,
+    note_id: int,
+    title: str | None = None,
+    content: str | None = None,
+    summary: str | None = None,
+    action_items: str | None = None
+) -> models.Note | None:
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    if not note:
+        return None
+
+    if title is not None:
+        note.name = title
+    if content is not None:
+        note.content = content
+    if summary is not None:
+        note.summary = summary
+    if action_items is not None:
+        note.action_items = action_items
+
+    db.commit()
+    db.refresh(note)
+    return note
