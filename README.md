@@ -9,6 +9,22 @@ This project is a full-stack web application that allows users to upload notes, 
 - **Database:** SQLite (via SQLAlchemy)
 - **AI Model:** OpenAI GPT-3.5 Turbo
 
+## Prerequisites
+
+Before setting up the project, make sure the following tools are installed on your system:
+
+| Tool        | Purpose                                  | How to Check                     |
+|-------------|-------------------------------------------|----------------------------------|
+| **Python 3.x** | Backend runtime & virtual environment     | `python3 --version`              |
+| **pip**     | Install Python packages (`requirements.txt`) | `pip --version`                 |
+| **Node.js & npm** | Frontend package manager (React, Tailwind) | `npm --version`               |
+| **make**    | Runs project setup and dev tasks via `Makefile` | `make --version`               |
+
+> **Note for Windows users:** You must install `make` to use this project. Consider using:
+>
+> - [WSL](https://learn.microsoft.com/en-us/windows/wsl/) (recommended)
+> - [Git Bash](https://gitforwindows.org/) (comes with `make`)
+
 ---
 
 
