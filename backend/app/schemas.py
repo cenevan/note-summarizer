@@ -1,5 +1,6 @@
 # app/schemas.py
 from pydantic import BaseModel
+from typing import Optional
 
 class NoteBase(BaseModel):
     name: str
@@ -21,6 +22,7 @@ class NoteUpdate(BaseModel):
     content: str | None = None
     summary: str | None = None
     action_items: str | None = None
+    include_action_items: Optional[bool] = True
 
     class Config:
         orm_mode = True

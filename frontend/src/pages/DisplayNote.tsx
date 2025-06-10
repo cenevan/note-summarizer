@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import ActionItemsToggle from "../components/ActionItemsToggle";
 
 interface Note {
   id: number;
@@ -20,6 +21,7 @@ export default function DisplayNote() {
   const [editedContent, setEditedContent] = useState("");
   const [isRenaming, setIsRenaming] = useState(false);
   const [editedName, setEditedName] = useState("");
+  const [includeActionItems, setIncludeActionItems] = useState(true);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -122,13 +124,17 @@ export default function DisplayNote() {
                 className="w-full p-4 text-white rounded-md bg-gray-800 border border-gray-600 resize-y"
                 rows={10}
               />
+              <ActionItemsToggle
+                includeActionItems={includeActionItems}
+                setIncludeActionItems={setIncludeActionItems}
+              />
               <div className="space-x-4">
                 <button
                   onClick={async () => {
                     const res = await fetch(`http://localhost:8000/notes/${note.id}`, {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ content: editedContent }),
+                      body: JSON.stringify({ content: editedContent, include_action_items: includeActionItems }),
                     });
                     if (res.ok) {
                       const updated = await res.json();
@@ -171,14 +177,16 @@ export default function DisplayNote() {
           <h2 className="text-xl font-semibold text-accent mb-2">Summary</h2>
           <p className="text-gray-300 whitespace-pre-wrap">{note.summary}</p>
         </section>
-        <section>
-          <h2 className="text-xl font-semibold text-accent mb-2">Action Items</h2>
-          <ul className="list-disc list-inside text-gray-300 space-y-1">
-            {note.action_items.split("\n").map((item, idx) => (
-              <li key={idx}>{item}</li>
-            ))}
-          </ul>
-        </section>
+        {note.action_items && (
+          <section>
+            <h2 className="text-xl font-semibold text-accent mb-2">Action Items</h2>
+            <ul className="list-disc list-inside text-gray-300 space-y-1">
+              {note.action_items.split("\n").map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </div>
   );

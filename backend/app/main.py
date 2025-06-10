@@ -17,10 +17,11 @@ def startup_event():
 async def upload_note(
     file: UploadFile = File(...),
     title: str = Form(...),
+    include_action_items: bool = Form(True),
     db: Session = Depends(get_db)
 ):
     content = (await file.read()).decode("utf-8")
-    summary, action_items = summarize_text(content)
+    summary, action_items = summarize_text(content, include_action_items)
     db_note = crud.create_note(db, title, content, summary, action_items)
     return {"summary": summary, "action_items": action_items}
 
@@ -46,7 +47,7 @@ def update_note(
     request: schemas.NoteUpdate,
     db: Session = Depends(get_db)
 ):
-    summary, action_items = summarize_text(request.content)
+    summary, action_items = summarize_text(request.content, request.include_action_items)
     updated_note = crud.update_note(db, note_id, None, request.content, summary, action_items)
     if not updated_note:
         return {"error": "Note not found"}

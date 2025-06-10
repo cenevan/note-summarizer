@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import ActionItemToggle from "../components/ActionItemsToggle";
 
 interface Result {
   summary: string;
@@ -13,6 +14,7 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [noteTitle, setNoteTitle] = useState("Untitled Note");
+  const [includeActionItems, setIncludeActionItems] = useState(true);
 
   const handleUpload = () => {
     if (!file) return;
@@ -25,6 +27,7 @@ export default function UploadPage() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("title", noteTitle);
+    formData.append("include_action_items", String(includeActionItems));
 
     setLoading(true);
     setResult(null);
@@ -73,6 +76,12 @@ export default function UploadPage() {
         />
         {file && <p className="mt-2 text-sm text-gray-300">Selected file: {file.name}</p>}
       </div>
+
+      <ActionItemToggle
+        includeActionItems={includeActionItems}
+        setIncludeActionItems={setIncludeActionItems}
+      />
+
       <button
         onClick={handleUpload}
         disabled={!file || loading}
@@ -92,12 +101,16 @@ export default function UploadPage() {
           <h2 className="text-2xl font-semibold mb-2">📄 Summary</h2>
           <p className="mb-6">{result.summary}</p>
 
-          <h2 className="text-2xl font-semibold mb-2">✅ Action Items</h2>
-          <ul className="list-disc list-inside text-left space-y-1">
-            {result.action_items.split("\n").map((item, idx) => (
-              <li key={idx}>{item}</li>
-            ))}
-          </ul>
+          {result.action_items && (
+            <>
+              <h2 className="text-2xl font-semibold mb-2">✅ Action Items</h2>
+              <ul className="list-disc list-inside text-left space-y-1">
+                {result.action_items.split("\n").map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
 

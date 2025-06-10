@@ -5,25 +5,41 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def summarize_text(text: str):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "Summarize this note clearly and concisely. "
-                    "Then, extract a list of action items. "
-                    "Format the response as:\n\n"
-                    "Summary:\n<summary here>\n\n"
-                    "Action Items:\n- item 1\n- item 2\n- item 3"
-                )
-            },
-            {"role": "user", "content": text}
-        ],
-        temperature=0.7,
-    )
-
+def summarize_text(text: str, include_action_items: bool = True) -> tuple[str, str]:
+    if include_action_items:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Summarize this note clearly and concisely. "
+                        "Then, extract a list of action items. "
+                        "Format the response as:\n\n"
+                        "Summary:\n<summary here>\n\n"
+                        "Action Items:\n- item 1\n- item 2\n- item 3"
+                    )
+                },
+                {"role": "user", "content": text}
+            ],
+            temperature=0.7,
+        )
+    else:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Summarize this note clearly and concisely. "
+                        "Do not include action items."
+                    )
+                },
+                {"role": "user", "content": text}
+            ],
+            temperature=0.7,
+        )
+    
     content = response.choices[0].message.content
 
     # Test content
@@ -39,6 +55,5 @@ def summarize_text(text: str):
         action_items = parts[1].replace("- ", "").strip()
     else:
         summary = content.strip()
-        action_items = "No action items found."
 
     return summary, action_items
