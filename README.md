@@ -63,4 +63,4 @@ Open `.env` in any text editor and insert your API key
 
 ### Once both servers are running:
  - Frontend: http://localhost:5173
- - Backend API: http://localhost:8000
+ - Backend API: http://localhost:8000/docs
