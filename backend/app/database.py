@@ -6,12 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_URL = os.getenv("DATABASE_URL", "sqlite:///./notes.db")
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@db:5432/notes")
 
-if DB_URL.startswith("sqlite"):
-    engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
-else:
-    engine = create_engine(DB_URL)
+engine = create_engine(DB_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
