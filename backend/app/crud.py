@@ -2,20 +2,26 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 
-def create_note(db: Session, title: str, content: str, summary: str, action_items: str) -> models.Note:
+def create_note(db: Session, title: str, content: str, summary: str, action_items: str, tags: list[str]) -> models.Note:
+    tag_objs = db.query(models.Tag).filter(models.Tag.name.in_(tags)).all()
+
     note = models.Note(
         name=title,
         content=content,
         summary=summary,
-        action_items=action_items
+        action_items=action_items,
+        tags=tag_objs
     )
     db.add(note)
     db.commit()
     db.refresh(note)
     return note
 
-def get_all_notes(db: Session) -> list[models.Note]:
-    return db.query(models.Note).all()
+def get_notes(db: Session, tags: list[str] | None = None) -> list[models.Note]:
+    query = db.query(models.Note)
+    if tags:
+        query = query.join(models.Note.tags).filter(models.Tag.name.in_(tags)).distinct()
+    return query.all()
 
 def delete_note(db: Session, note_id: int) -> None:
     note = db.query(models.Note).filter(models.Note.id == note_id).first()
@@ -52,3 +58,17 @@ def update_note(
     db.commit()
     db.refresh(note)
     return note
+
+def create_tag(db: Session, tag: schemas.TagCreate):
+    db_tag = models.Tag(name=tag.name, color=tag.color)
+    db.add(db_tag)
+    db.commit()
+    db.refresh(db_tag)
+    return db_tag
+
+def delete_tag(db: Session, tag_id: int):
+    tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
+    if tag:
+        db.delete(tag)
+        db.commit()
+    return tag

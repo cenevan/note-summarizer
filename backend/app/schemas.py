@@ -26,3 +26,16 @@ class NoteUpdate(BaseModel):
 
     class Config:
         orm_mode = True
+
+class TagBase(BaseModel):
+    name: str
+    color: Optional[str] = "#D1D5DB"  # Default color
+
+class TagCreate(TagBase):
+    pass
+
+class Tag(TagBase):
+    id: int
+
+    class Config:
+        orm_mode = True

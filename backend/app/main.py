@@ -1,9 +1,10 @@
-from fastapi import FastAPI, UploadFile, File, Form, Depends
+from fastapi import FastAPI, UploadFile, File, Form, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, get_db
 from app.summarizer import summarize_text
 from app import crud, schemas
 from sqlalchemy.orm import Session
+from typing import Optional
 import io
 
 app = FastAPI()
@@ -18,16 +19,17 @@ async def upload_note(
     file: UploadFile = File(...),
     title: str = Form(...),
     include_action_items: bool = Form(True),
+    tags: list[str] = Form(default=[]),
     db: Session = Depends(get_db)
 ):
     content = (await file.read()).decode("utf-8")
     summary, action_items = summarize_text(content, include_action_items)
-    db_note = crud.create_note(db, title, content, summary, action_items)
+    db_note = crud.create_note(db, title, content, summary, action_items, tags)
     return {"summary": summary, "action_items": action_items}
 
 @app.get("/notes/", response_model=list[schemas.Note])
-def get_notes(db: Session = Depends(get_db)):
-    return crud.get_all_notes(db)
+def get_notes(tags: Optional[list[str]] = Query(None), db: Session = Depends(get_db)):
+    return crud.get_notes(db, tags)
 
 @app.delete("/notes/{note_id}")
 def delete_note(note_id: int, db: Session = Depends(get_db)):
@@ -63,3 +65,14 @@ def update_note_name(
     if not updated_note:
         return {"error": "Note not found"}
     return updated_note
+
+@app.post("/tags/", response_model=schemas.Tag)
+def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
+    return crud.create_tag(db, tag)
+
+@app.delete("/tags/{tag_id}", response_model=schemas.Tag)
+def delete_tag(tag_id: int, db: Session = Depends(get_db)):
+    deleted = crud.delete_tag(db, tag_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    return deleted

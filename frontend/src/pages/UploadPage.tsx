@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ActionItemToggle from "../components/ActionItemsToggle";
+import TagSelector from "../components/TagSelector";
 
 interface Result {
   summary: string;
@@ -15,6 +16,7 @@ export default function UploadPage() {
   const [showModal, setShowModal] = useState(false);
   const [noteTitle, setNoteTitle] = useState("Untitled Note");
   const [includeActionItems, setIncludeActionItems] = useState(true);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const handleUpload = () => {
     if (!file) return;
@@ -28,6 +30,7 @@ export default function UploadPage() {
     formData.append("file", file);
     formData.append("title", noteTitle);
     formData.append("include_action_items", String(includeActionItems));
+    formData.append("tags", JSON.stringify(selectedTags));
 
     setLoading(true);
     setResult(null);
@@ -125,7 +128,8 @@ export default function UploadPage() {
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               placeholder="Untitled Note"
             />
-            <div className="flex justify-end space-x-2">
+            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+            <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-4 py-2 rounded-md bg-gray-300 text-black"
