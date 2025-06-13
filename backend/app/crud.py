@@ -66,9 +66,32 @@ def create_tag(db: Session, tag: schemas.TagCreate):
     db.refresh(db_tag)
     return db_tag
 
+def get_tags(db: Session) -> list[models.Tag]:
+    return db.query(models.Tag).all()
+
+def get_tag_for_note(db: Session, note_id: int) -> list[models.Tag]:
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    if not note:
+        return []
+    return note.tags
+
 def delete_tag(db: Session, tag_id: int):
     tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
     if tag:
         db.delete(tag)
         db.commit()
     return tag
+
+def assign_tag_to_note(db: Session, note_id: int, tag_id: int) -> models.Note | None:
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
+
+    if not note or not tag:
+        return None
+
+    if tag not in note.tags:
+        note.tags.append(tag)
+        db.commit()
+        db.refresh(note)
+
+    return note

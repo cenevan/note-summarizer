@@ -128,7 +128,9 @@ export default function UploadPage() {
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               placeholder="Untitled Note"
             />
-            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+            {/*
+              <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+            */}
             <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => setShowModal(false)}

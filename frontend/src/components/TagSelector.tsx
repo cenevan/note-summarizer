@@ -7,13 +7,15 @@ interface Tag {
 }
 
 interface Props {
-  selectedTags: string[];
-  setSelectedTags: (tags: string[]) => void;
+  noteId: number;
+  selectedTags: Tag[];
+  setSelectedTags: (tags: Tag[]) => void;
 }
 
-const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
+const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags }) => {
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/tags/")
@@ -22,34 +24,53 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
       .catch(error => console.error("Error fetching tags:", error));
   }, []);
 
-  const toggleTag = (tagName: string) => {
-    if (selectedTags.includes(tagName)) {
-      setSelectedTags(selectedTags.filter(tag => tag !== tagName));
+  const toggleTag = (tag: Tag) => {
+    if (selectedTags.some(t => t.id === tag.id)) {
+      setSelectedTags(selectedTags.filter(t => t.id !== tag.id));
+      // Optionally, implement tag removal logic here
     } else {
-      setSelectedTags([...selectedTags, tagName]);
+      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+        method: "POST",
+      })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to assign tag");
+          setSelectedTags([...selectedTags, tag]);
+        })
+        .catch(error => {
+          console.error("Error assigning tag:", error);
+        });
     }
   };
 
   const handleCreateTag = () => {
-    if (!newTagName.trim()) return;
+    const trimmedName = newTagName.trim();
+    if (!trimmedName) return;
+
     console.log("Sending new tag to backend:", {
-        name: newTagName,
-        color: "#D1D5DB",
+      name: trimmedName,
+      color: "#D1D5DB",
     });
 
     fetch("http://localhost:8000/tags/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: newTagName, color: "#D1D5DB" }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: trimmedName, color: "#D1D5DB" }),
     })
-      .then(response => response.json())
-      .then(data => {
+      .then(async response => {
+        if (!response.ok) {
+          const err = await response.json();
+          setError(err.detail || "Error creating tag");
+          return;
+        }
+        const data = await response.json();
         setAvailableTags([...availableTags, data]);
         setNewTagName("");
+        setError(null);
       })
-      .catch(error => console.error("Error creating tag:", error));
+      .catch(error => {
+        console.error("Error creating tag:", error);
+        setError("Error creating tag");
+      });
   };
 
   return (
@@ -59,9 +80,9 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
         {availableTags.map(tag => (
           <button
             key={tag.id}
-            onClick={() => toggleTag(tag.name)}
+            onClick={() => toggleTag(tag)}
             className={`px-3 py-1 rounded-full text-sm ${
-              selectedTags.includes(tag.name)
+              selectedTags.some(t => t.id === tag.id)
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-black"
             }`}
@@ -75,7 +96,10 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
           type="text"
           className="border border-gray-300 rounded px-2 py-1 text-sm"
           value={newTagName}
-          onChange={(e) => setNewTagName(e.target.value)}
+          onChange={(e) => {
+            setError(null);
+            setNewTagName(e.target.value);
+          }}
           placeholder="New tag name"
         />
         <button
@@ -86,6 +110,11 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
           Create Tag
         </button>
       </div>
+      {error && (
+        <p className="text-red-500 text-sm mt-1">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

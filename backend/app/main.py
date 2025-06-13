@@ -1,10 +1,11 @@
-from fastapi import FastAPI, UploadFile, File, Form, Depends, Query
+from fastapi import FastAPI, UploadFile, File, Form, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, get_db
 from app.summarizer import summarize_text
 from app import crud, schemas
 from sqlalchemy.orm import Session
 from typing import Optional
+from sqlalchemy.exc import IntegrityError
 import io
 
 app = FastAPI()
@@ -67,8 +68,23 @@ def update_note_name(
     return updated_note
 
 @app.post("/tags/", response_model=schemas.Tag)
-def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
-    return crud.create_tag(db, tag)
+def create_tag(
+    tag_in: schemas.TagCreate,
+    db: Session = Depends(get_db),
+):
+    try:
+        return crud.create_tag(db, tag_in)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Tag already exists")
+
+@app.get("/tags/", response_model=list[schemas.Tag])
+def get_all_tags(db: Session = Depends(get_db)):
+    return crud.get_tags(db)
+
+@app.get("/tags/{note_id}", response_model=list[schemas.Tag])
+def get_tags_for_note(note_id: int, db: Session = Depends(get_db)):
+    tags = crud.get_tag_for_note(db, note_id)
+    return tags
 
 @app.delete("/tags/{tag_id}", response_model=schemas.Tag)
 def delete_tag(tag_id: int, db: Session = Depends(get_db)):
@@ -76,3 +92,10 @@ def delete_tag(tag_id: int, db: Session = Depends(get_db)):
     if not deleted:
         raise HTTPException(status_code=404, detail="Tag not found")
     return deleted
+
+@app.post("/notes/{note_id}/tags/{tag_id}", response_model=schemas.Note)
+def assign_tag_to_note(note_id: int, tag_id: int, db: Session = Depends(get_db)):
+    note = crud.assign_tag_to_note(db, note_id, tag_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note or Tag not found")
+    return note
