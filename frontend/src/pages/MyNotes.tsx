@@ -47,32 +47,47 @@ export default function MyNotes() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white text-center p-8 font-sans">
-      <h1 className="text-4xl font-bold text-primary mb-4">📚 My Notes</h1>
-      <div className="mb-6 space-x-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
+      <h1 className="text-5xl font-extrabold tracking-tight text-primary drop-shadow-lg text-center">
+        📚 My Notes
+      </h1>
+
+      <div className="space-x-4 text-lg">
         <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
         <Link to="/upload" className="text-blue-400 hover:underline">Upload a Note</Link>
       </div>
 
-      <div className="mb-4">
+      <div>
         <button
           onClick={() => setFiltering(!filtering)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+          className="px-6 py-2 rounded-full bg-primary text-white font-semibold hover:bg-blue-600 transition"
         >
           {filtering ? "Hide Filter" : "Filter by Tags"}
         </button>
       </div>
 
       {filtering && (
-        <div className="mb-6 border border-gray-400 bg-gray-800 p-4 rounded">
+        <div className="w-full max-w-3xl border border-gray-400 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-md mt-4">
           <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
         </div>
       )}
 
       {notes.length === 0 ? (
-        <p>No notes found.</p>
+        <div className="mt-12 bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-xl shadow-md max-w-xl text-center">
+          <div className="text-6xl mb-4">🗒️</div>
+          <h2 className="text-2xl font-semibold text-white mb-2">No Notes Yet</h2>
+          <p className="text-gray-300 mb-4">
+            It looks like you haven’t uploaded any notes. Let’s get started!
+          </p>
+          <Link
+            to="/upload"
+            className="inline-block px-5 py-2 rounded-full bg-primary text-white hover:bg-blue-600 transition font-medium text-lg"
+          >
+            Upload Your First Note
+          </Link>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
           {notes.map((note) => (
             <NoteCard
               noteId={note.id}

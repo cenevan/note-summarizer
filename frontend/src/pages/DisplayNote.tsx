@@ -95,10 +95,11 @@ export default function DisplayNote() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white text-center p-8 font-sans">
-      <Link to="/notes" className="text-blue-400 hover:underline mb-4 inline-block">
-        ← Back to My Notes
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
+      <div className="space-x-4 text-lg">
+        <Link to="/" className="text-blue-400 hover:underline">← Home</Link>
+        <Link to="/notes" className="text-blue-400 hover:underline">Back to My Notes</Link>
+      </div>
       {isRenaming ? (
         <div className="flex justify-center items-center gap-2 mb-6">
           <input
@@ -129,7 +130,7 @@ export default function DisplayNote() {
       )}
 
       {tags.length > 0 && (
-        <div className="mb-6 flex flex-wrap justify-center gap-2">
+        <div className="max-w-3xl w-full flex flex-wrap justify-center gap-2">
           {tags.map(tag => (
             <span
               key={tag.id}
@@ -206,9 +207,9 @@ export default function DisplayNote() {
         </div>
       )}
 
-      <div className="max-w-4xl bg-gray-700 mx-auto text-left space-y-8 p-6 rounded-lg shadow-md">
+      <div className="w-full max-w-4xl bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow-lg space-y-8">
         <section>
-          <h2 className="text-xl font-semibold text-accent mb-2">Original Content</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-2">Original Content</h2>
           {isEditing ? (
             <div className="space-y-4">
               <textarea
@@ -237,13 +238,13 @@ export default function DisplayNote() {
                       alert("Failed to update note.");
                     }
                   }}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md"
+                  className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md"
+                  className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition"
                 >
                   Cancel
                 </button>
@@ -259,7 +260,7 @@ export default function DisplayNote() {
                   setIsEditing(true);
                   setEditedContent(note.content);
                 }}
-                className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                className="mt-4 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition"
               >
                 Edit Original Text
               </button>
@@ -267,17 +268,21 @@ export default function DisplayNote() {
           )}
         </section>
         <section>
-          <h2 className="text-xl font-semibold text-accent mb-2">Summary</h2>
-          <p className="text-gray-300 whitespace-pre-wrap">{note.summary}</p>
+          <h2 className="text-2xl font-semibold text-primary mb-2">Summary</h2>
+          <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+            {note.summary}
+          </div>
         </section>
         {note.action_items && (
           <section>
-            <h2 className="text-xl font-semibold text-accent mb-2">Action Items</h2>
-            <ul className="list-disc list-inside text-gray-300 space-y-1">
-              {note.action_items.split("\n").map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
+            <h2 className="text-2xl font-semibold text-primary mb-2">Action Items</h2>
+            <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+              <ul className="list-disc list-inside space-y-1">
+                {note.action_items.split("\n").map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
           </section>
         )}
       </div>

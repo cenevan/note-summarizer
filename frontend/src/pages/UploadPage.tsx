@@ -75,18 +75,20 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white text-center p-8 font-sans flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold text-primary mb-4">📝 Upload a Note</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
+      <h1 className="text-5xl font-extrabold tracking-tight text-primary drop-shadow-lg text-center">
+        📝 Upload a Note
+      </h1>
 
-      <div className="mb-6 space-x-4">
+      <div className="space-x-4 text-lg">
         <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
         <Link to="/notes" className="text-blue-400 hover:underline">View My Notes</Link>
       </div>
 
-      <div className="mb-4">
+      <div className="flex flex-col items-center space-y-6 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-md border border-white/20 w-full max-w-2xl">
         <label
           htmlFor="file-upload"
-          className="inline-block cursor-pointer px-4 py-2 bg-gray-800 text-white border border-gray-500 rounded-md hover:bg-gray-700"
+          className="cursor-pointer px-5 py-3 bg-gray-800 text-white border border-gray-500 rounded-full hover:bg-gray-700"
         >
           📁 Select a Note File
         </label>
@@ -97,30 +99,29 @@ export default function UploadPage() {
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="hidden"
         />
-        {file && <p className="mt-2 text-sm text-gray-300">Selected file: {file.name}</p>}
+        {file && <p className="text-sm text-gray-300">Selected file: {file.name}</p>}
+
+        <ActionItemToggle
+          includeActionItems={includeActionItems}
+          setIncludeActionItems={setIncludeActionItems}
+        />
+
+        <button
+          onClick={handleUpload}
+          disabled={!file || loading}
+          className={`px-6 py-2 rounded-full text-white transition font-semibold ${
+            loading || !file
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-primary hover:bg-blue-600"
+          }`}
+        >
+          {loading ? "Summarizing..." : "Upload & Summarize"}
+        </button>
+
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
 
-      <ActionItemToggle
-        includeActionItems={includeActionItems}
-        setIncludeActionItems={setIncludeActionItems}
-      />
-
-      <button
-        onClick={handleUpload}
-        disabled={!file || loading}
-        className={`px-6 py-2 rounded-md text-white transition ${
-          loading || !file
-            ? "bg-blue-300 cursor-not-allowed"
-            : "bg-blue-300 hover:bg-blue-700"
-        }`}
-      >
-        {loading ? "Summarizing..." : "Upload & Summarize"}
-      </button>
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-
       {result && (
-        console.log("Result:", result),
         <>
           <div className="mt-8 max-w-xl w-full shadow-lg shadow-blue-500/50 rounded-lg">
             <NoteCard
@@ -129,16 +130,14 @@ export default function UploadPage() {
               summary={result.summary}
               actionItems={result.action_items}
               tagsProp={selectedTags}
-              onDelete={
-                async (id: number) => {
-                  const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
-                  if (res.ok) {
-                    setResult(null);
-                  } else {
-                    alert("Failed to delete note.");
-                  }
+              onDelete={async (id: number) => {
+                const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                  setResult(null);
+                } else {
+                  alert("Failed to delete note.");
                 }
-              }
+              }}
               expandLink={`/notes/${result.id}`}
             />
           </div>
@@ -174,6 +173,22 @@ export default function UploadPage() {
           </div>
         </div>
       )}
+
+      {/* Future Enhancements Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full mt-14">
+        <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
+          <h2 className="text-xl font-semibold mb-2">📈 Upload History</h2>
+          <p className="text-sm text-gray-300">Track notes you’ve previously uploaded and summarized.</p>
+        </div>
+        <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
+          <h2 className="text-xl font-semibold mb-2">💡 Tips for Better Summaries</h2>
+          <p className="text-sm text-gray-300">Learn how to write notes that generate clearer summaries and actions.</p>
+        </div>
+        <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
+          <h2 className="text-xl font-semibold mb-2">✍️ Coming Soon: Drafting Workspace</h2>
+          <p className="text-sm text-gray-300">Use context-aware AI to write and improve notes directly in the app.</p>
+        </div>
+      </div>
     </div>
   );
 }
