@@ -12,6 +12,7 @@ interface Props {
   name: string;
   summary: string;
   actionItems: string;
+  tagsProp?: Tag[];
   onDelete: (noteId: number) => void;
   expandLink?: string;
 }
@@ -21,6 +22,7 @@ const NoteCard: React.FC<Props> = ({
   name,
   summary,
   actionItems,
+  tagsProp,
   onDelete,
   expandLink,
 }) => {
@@ -29,12 +31,19 @@ const NoteCard: React.FC<Props> = ({
   const [editedName, setEditedName] = useState(name);
   const [tags, setTags] = useState<Tag[]>([]);
   useEffect(() => {
-    fetch(`http://localhost:8000/tags/${noteId}`)
-      .then(res => res.json())
-      .then(data => setTags(data))
-      .catch(err => console.error("Failed to fetch tags", err));
-  }, [noteId]);
-  
+    console.log("NoteCard useEffect triggered");
+    if (tagsProp) {
+      console.log("Using provided tags prop:", tagsProp);
+      setTags(tagsProp);
+    } else {
+      console.log("Fetching tags for noteId:", noteId);
+      fetch(`http://localhost:8000/tags/${noteId}`)
+        .then(res => res.json())
+        .then(data => setTags(data))
+        .catch(err => console.error("Failed to fetch tags", err));
+    }
+  }, [noteId, tagsProp]);
+
   const changeName = async (editedName: string) => {
     const res = await fetch(`http://localhost:8000/notes/${noteId}/name`, {
       method: "PUT",
