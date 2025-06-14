@@ -80,11 +80,6 @@ export default function UploadPage() {
         📝 Upload a Note
       </h1>
 
-      <div className="space-x-4 text-lg">
-        <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
-        <Link to="/notes" className="text-blue-400 hover:underline">View My Notes</Link>
-      </div>
-
       <div className="flex flex-col items-center space-y-6 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-md border border-white/20 w-full max-w-2xl">
         <label
           htmlFor="file-upload"

@@ -96,9 +96,13 @@ export default function DisplayNote() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
-      <div className="space-x-4 text-lg">
-        <Link to="/" className="text-blue-400 hover:underline">← Home</Link>
-        <Link to="/notes" className="text-blue-400 hover:underline">Back to My Notes</Link>
+      <div className="w-full max-w-4xl mb-4">
+        <Link
+          to="/notes"
+          className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
+        >
+          ← Back to My Notes
+        </Link>
       </div>
       {isRenaming ? (
         <div className="flex justify-center items-center gap-2 mb-6">
@@ -129,53 +133,51 @@ export default function DisplayNote() {
         </div>
       )}
 
-      {tags.length > 0 && (
-        <div className="max-w-3xl w-full flex flex-wrap justify-center gap-2">
-          {tags.map(tag => (
-            <span
-              key={tag.id}
-              className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 text-white bg-gray-800"
-            >
-              <span
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: tag.color }}
-              ></span>
-              {tag.name}
-              <div className="relative group">
-                <span
-                  className="px-2 py-0.5 rounded-full text-base cursor-pointer hover:text-red-400"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    try {
-                      const response = await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
-                        method: "DELETE",
-                      });
-                      if (response.ok) {
-                        setTags(prev => prev.filter(t => t.id !== tag.id));
-                      }
-                    } catch (err) {
-                      console.error("Error removing tag:", err);
-                    }
-                  }}
-                >
-                  ×
-                </span>
-                <span className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 text-xs text-white bg-black rounded hidden group-hover:flex whitespace-nowrap">
-                  Delete tag from note
-                </span>
-              </div>
-            </span>
-          ))}
-          <button
-            onClick={() => setShowTagSelector(!showTagSelector)}
-            className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border-2 border-dashed border-blue-400 text-blue-400 hover:bg-blue-800"
-            title="Add Tags"
+      <div className="max-w-3xl w-full flex flex-wrap justify-center gap-2">
+        {tags.map(tag => (
+          <span
+            key={tag.id}
+            className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 text-white bg-gray-800"
           >
-            <span className="w-3 h-3 rounded-full bg-blue-400"></span>
-            Add Tag
-          </button>
-        </div>
-      )}
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: tag.color }}
+            ></span>
+            {tag.name}
+            <div className="relative group">
+              <span
+                className="px-2 py-0.5 rounded-full text-base cursor-pointer hover:text-red-400"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    const response = await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
+                      method: "DELETE",
+                    });
+                    if (response.ok) {
+                      setTags(prev => prev.filter(t => t.id !== tag.id));
+                    }
+                  } catch (err) {
+                    console.error("Error removing tag:", err);
+                  }
+                }}
+              >
+                ×
+              </span>
+              <span className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 text-xs text-white bg-black rounded hidden group-hover:flex whitespace-nowrap">
+                Delete tag from note
+              </span>
+            </div>
+          </span>
+        ))}
+        <button
+          onClick={() => setShowTagSelector(!showTagSelector)}
+          className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border-2 border-dashed border-blue-400 text-blue-400 hover:bg-blue-800"
+          title="Add Tags"
+        >
+          <span className="w-3 h-3 rounded-full bg-blue-400"></span>
+          Add Tag
+        </button>
+      </div>
 
       {showTagSelector && (
         <div className="mb-6 border border-gray-400 bg-gray-800 p-4 rounded">

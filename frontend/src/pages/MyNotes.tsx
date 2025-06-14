@@ -52,11 +52,6 @@ export default function MyNotes() {
         📚 My Notes
       </h1>
 
-      <div className="space-x-4 text-lg">
-        <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
-        <Link to="/upload" className="text-blue-400 hover:underline">Upload a Note</Link>
-      </div>
-
       <div>
         <button
           onClick={() => setFiltering(!filtering)}

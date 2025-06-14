@@ -58,13 +58,13 @@ const NoteCard: React.FC<Props> = ({
   }
 
   return (
-    <div className="bg-gray-700 dark:bg-secondary p-6 rounded-lg shadow-md text-gray-900 dark:text-white font-sans transition-all duration-300 hover:shadow-lg h-full flex flex-col justify-between">
+    <div className="bg-gray-800 border border-gray-700 p-6 rounded-xl shadow-lg text-white font-sans transition-all duration-300 hover:shadow-xl h-full flex flex-col justify-between">
       <div>
         <div className="flex flex-col items-center">
           {isRenaming ? (
             <div className="flex items-center gap-2 mb-2">
               <input
-                className="text-2xl font-bold text-primary leading-tight break-words bg-transparent border-b border-primary focus:outline-none text-center"
+                className="text-3xl font-bold text-primary leading-tight break-words bg-transparent border-b border-primary focus:outline-none text-center"
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 autoFocus
@@ -79,7 +79,7 @@ const NoteCard: React.FC<Props> = ({
             </div>
           ) : (
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-2xl font-bold text-primary leading-tight break-words text-center">
+              <h3 className="text-3xl font-bold text-primary leading-tight break-words text-center">
                 {editedName}
               </h3>
               <button
@@ -97,7 +97,7 @@ const NoteCard: React.FC<Props> = ({
             {tags.map(tag => (
               <span
                 key={tag.id}
-                className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 text-white bg-gray-800"
+                className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border border-gray-600 bg-gray-700 text-white"
               >
                 <span
                   className="w-3 h-3 rounded-full"
@@ -132,13 +132,13 @@ const NoteCard: React.FC<Props> = ({
         {expandLink ? (
           <Link
             to={expandLink}
-            className="text-sm text-blue-400 hover:text-blue-600 transition"
+            className="text-sm px-3 py-1 rounded-md border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
           >
             + Expand
           </Link>
         ) : (
           <button
-            className="text-sm text-blue-400 hover:text-blue-600 transition"
+            className="text-sm px-3 py-1 rounded-md border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
             onClick={() => setExpanded(!expanded)}
           >
             {expanded ? "− Collapse" : "+ Expand"}
@@ -147,7 +147,7 @@ const NoteCard: React.FC<Props> = ({
 
         <button
           onClick={() => onDelete(noteId)}
-          className="text-sm text-red-400 hover:text-red-600 transition"
+          className="text-sm px-3 py-1 rounded-md border border-red-400 text-red-400 hover:bg-red-800 transition"
         >
           Delete
         </button>
