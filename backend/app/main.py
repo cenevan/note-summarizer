@@ -86,11 +86,9 @@ def get_tags_for_note(note_id: int, db: Session = Depends(get_db)):
     tags = crud.get_tag_for_note(db, note_id)
     return tags
 
-@app.get("/tags/{tag_id}/notes", response_model=list[schemas.Note])
-def get_notes_by_tag(tag_id: int, db: Session = Depends(get_db)):
-    notes = crud.get_notes_by_tag(db, tag_id)
-    if not notes:
-        raise HTTPException(status_code=404, detail="No notes found for this tag")
+@app.get("/notes/tags/", response_model=list[schemas.Note])
+def get_notes_by_tags(tags: list[str] = Query(default=[]), db: Session = Depends(get_db)):
+    notes = crud.get_notes_by_tags(db, tags)
     return notes
 
 @app.delete("/tags/{tag_id}", response_model=schemas.Tag)

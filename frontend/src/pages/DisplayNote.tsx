@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import TagSelector from "../components/TagSelector";
 import { useParams, Link } from "react-router-dom";
 import ActionItemsToggle from "../components/ActionItemsToggle";
 
@@ -29,6 +30,8 @@ export default function DisplayNote() {
   const [editedName, setEditedName] = useState("");
   const [includeActionItems, setIncludeActionItems] = useState(true);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [showTagSelector, setShowTagSelector] = useState(false);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -162,6 +165,44 @@ export default function DisplayNote() {
               </div>
             </span>
           ))}
+          <button
+            onClick={() => setShowTagSelector(!showTagSelector)}
+            className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border-2 border-dashed border-blue-400 text-blue-400 hover:bg-blue-800"
+            title="Add Tags"
+          >
+            <span className="w-3 h-3 rounded-full bg-blue-400"></span>
+            Add Tag
+          </button>
+        </div>
+      )}
+
+      {showTagSelector && (
+        <div className="mb-6 border border-gray-400 bg-gray-800 p-4 rounded">
+          <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+          <button
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md"
+            onClick={async () => {
+              try {
+                for (const tag of selectedTags) {
+                  await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
+                    method: "POST",
+                  });
+                }
+                const tagsRes = await fetch(`http://localhost:8000/tags/${note.id}`);
+                if (tagsRes.ok) {
+                  const updatedTags = await tagsRes.json();
+                  setTags(updatedTags);
+                }
+                setShowTagSelector(false);
+                setSelectedTags([]);
+              } catch (error) {
+                console.error("Failed to save tags:", error);
+                alert("Something went wrong while saving tags. Please try again.");
+              }
+            }}
+          >
+            Save Tags
+          </button>
         </div>
       )}
 

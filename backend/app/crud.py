@@ -1,5 +1,6 @@
 # app/crud.py
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app import models, schemas
 
 def create_note(db: Session, title: str, content: str, summary: str, action_items: str, tags: list[str]) -> models.Note:
@@ -75,11 +76,17 @@ def get_tag_for_note(db: Session, note_id: int) -> list[models.Tag]:
         return []
     return note.tags
 
-def get_notes_by_tag(db: Session, tag_id: int) -> list[models.Note]:
-    tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
-    if not tag:
-        return []
-    return tag.notes
+def get_notes_by_tags(db: Session, tags: list[str]) -> list[models.Note]:
+    if not tags:
+        return db.query(models.Note).all()
+    return (
+        db.query(models.Note)
+        .join(models.Note.tags)
+        .filter(models.Tag.name.in_(tags))
+        .group_by(models.Note.id)
+        .having(func.count(models.Tag.id) == len(tags))
+        .all()
+    )
 
 def delete_tag(db: Session, tag_id: int):
     tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()

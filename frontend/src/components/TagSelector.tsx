@@ -68,9 +68,9 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center text-center">
       <label className="block text-sm font-medium mb-1">Tags</label>
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex flex-wrap gap-2 mb-2 justify-center">
         {availableTags.map(tag => (
           <button
             key={tag.id}
@@ -111,7 +111,7 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
           </button>
         ))}
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-center">
         <input
           type="text"
           className="border border-gray-300 rounded px-2 py-1 text-sm"

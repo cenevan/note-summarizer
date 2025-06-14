@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import NoteCard from "../components/NoteCard";
+import TagSelector from "../components/TagSelector";
 
 interface Note {
   id: number;
@@ -10,15 +11,31 @@ interface Note {
   action_items: string;
 }
 
+interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export default function MyNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [filtering, setFiltering] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8000/notes/")
-      .then((res) => res.json())
-      .then(setNotes)
-      .catch(() => console.error("Failed to fetch notes"));
-  }, []);
+    if (filtering && selectedTags.length > 0) {
+      const query = selectedTags.map(tag => `tags=${encodeURIComponent(tag.name)}`).join("&");
+      fetch(`http://localhost:8000/notes/tags/?${query}`)
+        .then((res) => res.json())
+        .then(setNotes)
+        .catch(() => console.error("Failed to fetch notes"));
+    } else {
+      fetch("http://localhost:8000/notes/")
+        .then((res) => res.json())
+        .then(setNotes)
+        .catch(() => console.error("Failed to fetch notes"));
+    }
+  }, [selectedTags, filtering]);
 
   const deleteNote = async (id: number) => {
     const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
@@ -36,6 +53,21 @@ export default function MyNotes() {
         <Link to="/" className="text-blue-400 hover:underline">← Back to Home</Link>
         <Link to="/upload" className="text-blue-400 hover:underline">Upload a Note</Link>
       </div>
+
+      <div className="mb-4">
+        <button
+          onClick={() => setFiltering(!filtering)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+        >
+          {filtering ? "Hide Filter" : "Filter by Tags"}
+        </button>
+      </div>
+
+      {filtering && (
+        <div className="mb-6 border border-gray-400 bg-gray-800 p-4 rounded">
+          <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+        </div>
+      )}
 
       {notes.length === 0 ? (
         <p>No notes found.</p>

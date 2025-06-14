@@ -29,6 +29,7 @@ export default function UploadPage() {
 
   const handleUpload = () => {
     if (!file) return;
+    setResult(null);
     setShowModal(true);
   };
 
@@ -120,26 +121,28 @@ export default function UploadPage() {
 
       {result && (
         console.log("Result:", result),
-        <div className="mt-8 max-w-xl w-full">
-          <NoteCard
-            noteId={result.id}
-            name={noteTitle}
-            summary={result.summary}
-            actionItems={result.action_items}
-            tagsProp={selectedTags}
-            onDelete={
-              async (id: number) => {
-                const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                  setResult(null);
-                } else {
-                  alert("Failed to delete note.");
+        <>
+          <div className="mt-8 max-w-xl w-full shadow-lg shadow-blue-500/50 rounded-lg">
+            <NoteCard
+              noteId={result.id}
+              name={noteTitle}
+              summary={result.summary}
+              actionItems={result.action_items}
+              tagsProp={selectedTags}
+              onDelete={
+                async (id: number) => {
+                  const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
+                  if (res.ok) {
+                    setResult(null);
+                  } else {
+                    alert("Failed to delete note.");
+                  }
                 }
               }
-            }
-            expandLink={`/notes/${result.id}`}
-          />
-        </div>
+              expandLink={`/notes/${result.id}`}
+            />
+          </div>
+        </>
       )}
 
       {showModal && (
