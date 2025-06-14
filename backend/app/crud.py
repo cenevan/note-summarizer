@@ -75,6 +75,12 @@ def get_tag_for_note(db: Session, note_id: int) -> list[models.Tag]:
         return []
     return note.tags
 
+def get_notes_by_tag(db: Session, tag_id: int) -> list[models.Note]:
+    tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
+    if not tag:
+        return []
+    return tag.notes
+
 def delete_tag(db: Session, tag_id: int):
     tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
     if tag:
@@ -91,6 +97,20 @@ def assign_tag_to_note(db: Session, note_id: int, tag_id: int) -> models.Note | 
 
     if tag not in note.tags:
         note.tags.append(tag)
+        db.commit()
+        db.refresh(note)
+
+    return note
+
+def remove_tag_from_note(db: Session, note_id: int, tag_id: int) -> models.Note | None:
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    tag = db.query(models.Tag).filter(models.Tag.id == tag_id).first()
+
+    if not note or not tag:
+        return None
+
+    if tag in note.tags:
+        note.tags.remove(tag)
         db.commit()
         db.refresh(note)
 

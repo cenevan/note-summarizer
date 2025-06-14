@@ -10,6 +10,12 @@ interface Note {
   action_items: string;
 }
 
+interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export default function DisplayNote() {
   const { id } = useParams();
   console.log("DisplayNote mounted, id:", id);
@@ -22,6 +28,7 @@ export default function DisplayNote() {
   const [isRenaming, setIsRenaming] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [includeActionItems, setIncludeActionItems] = useState(true);
+  const [tags, setTags] = useState<Tag[]>([]);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -56,6 +63,11 @@ export default function DisplayNote() {
         setNote(data);
         setEditedName(data.name);
         setLoading(false);
+
+        fetch(`http://localhost:8000/tags/${id}`)
+          .then((res) => res.json())
+          .then((tagsData) => setTags(tagsData))
+          .catch((err) => console.error("Error fetching tags:", err));
       })
       .catch((err) => {
         console.error("Error fetching note:", err);
@@ -110,6 +122,46 @@ export default function DisplayNote() {
           >
             ✏️
           </button>
+        </div>
+      )}
+
+      {tags.length > 0 && (
+        <div className="mb-6 flex flex-wrap justify-center gap-2">
+          {tags.map(tag => (
+            <span
+              key={tag.id}
+              className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 text-white bg-gray-800"
+            >
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: tag.color }}
+              ></span>
+              {tag.name}
+              <div className="relative group">
+                <span
+                  className="px-2 py-0.5 rounded-full text-base cursor-pointer hover:text-red-400"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      const response = await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
+                        method: "DELETE",
+                      });
+                      if (response.ok) {
+                        setTags(prev => prev.filter(t => t.id !== tag.id));
+                      }
+                    } catch (err) {
+                      console.error("Error removing tag:", err);
+                    }
+                  }}
+                >
+                  ×
+                </span>
+                <span className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 text-xs text-white bg-black rounded hidden group-hover:flex whitespace-nowrap">
+                  Delete tag from note
+                </span>
+              </div>
+            </span>
+          ))}
         </div>
       )}
 

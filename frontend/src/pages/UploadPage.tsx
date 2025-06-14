@@ -2,10 +2,19 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ActionItemToggle from "../components/ActionItemsToggle";
 import TagSelector from "../components/TagSelector";
+import NoteCard from "../components/NoteCard";
 
 interface Result {
+  id: number;
   summary: string;
   action_items: string;
+  tags: Tag[];
+}
+
+interface Tag {
+  id: number;
+  name: string;
+  color: string;
 }
 
 export default function UploadPage() {
@@ -16,7 +25,7 @@ export default function UploadPage() {
   const [showModal, setShowModal] = useState(false);
   const [noteTitle, setNoteTitle] = useState("Untitled Note");
   const [includeActionItems, setIncludeActionItems] = useState(true);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   const handleUpload = () => {
     if (!file) return;
@@ -30,7 +39,7 @@ export default function UploadPage() {
     formData.append("file", file);
     formData.append("title", noteTitle);
     formData.append("include_action_items", String(includeActionItems));
-    formData.append("tags", JSON.stringify(selectedTags));
+    formData.append("tags", JSON.stringify(selectedTags.map(tag => tag.id)));
 
     setLoading(true);
     setResult(null);
@@ -47,6 +56,19 @@ export default function UploadPage() {
 
       const data = await res.json();
       setResult(data);
+
+      const noteId = data.id;
+
+      console.log("Returned note ID:", noteId);
+      console.log("Selected tags:", selectedTags);
+
+      if (noteId) {
+        for (const tag of selectedTags) {
+          await fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+            method: "POST",
+          });
+        }
+      }
     } catch (err) {
       setError("Something went wrong while uploading the file.");
     } finally {
@@ -100,20 +122,14 @@ export default function UploadPage() {
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
       {result && (
-        <div className="mt-8 max-w-xl">
-          <h2 className="text-2xl font-semibold mb-2">📄 Summary</h2>
-          <p className="mb-6">{result.summary}</p>
-
-          {result.action_items && (
-            <>
-              <h2 className="text-2xl font-semibold mb-2">✅ Action Items</h2>
-              <ul className="list-disc list-inside text-left space-y-1">
-                {result.action_items.split("\n").map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
+        <div className="mt-8 max-w-xl w-full">
+          <NoteCard
+            noteId={result.id}
+            name={noteTitle}
+            summary={result.summary}
+            actionItems={result.action_items}
+            onDelete={() => setResult(null)}
+          />
         </div>
       )}
 
@@ -128,9 +144,7 @@ export default function UploadPage() {
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               placeholder="Untitled Note"
             />
-            {/*
-              <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
-            */}
+            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
             <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => setShowModal(false)}

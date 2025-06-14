@@ -7,14 +7,14 @@ interface Tag {
 }
 
 interface Props {
-  noteId: number;
   selectedTags: Tag[];
-  setSelectedTags: (tags: Tag[]) => void;
+  setSelectedTags: React.Dispatch<React.SetStateAction<Tag[]>>;
 }
 
-const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags }) => {
+const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState("#D1D5DB");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,21 +24,15 @@ const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags })
       .catch(error => console.error("Error fetching tags:", error));
   }, []);
 
+  useEffect(() => {
+    setSelectedTags([]);
+  }, []);
+
   const toggleTag = (tag: Tag) => {
     if (selectedTags.some(t => t.id === tag.id)) {
       setSelectedTags(selectedTags.filter(t => t.id !== tag.id));
-      // Optionally, implement tag removal logic here
     } else {
-      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
-        method: "POST",
-      })
-        .then(response => {
-          if (!response.ok) throw new Error("Failed to assign tag");
-          setSelectedTags([...selectedTags, tag]);
-        })
-        .catch(error => {
-          console.error("Error assigning tag:", error);
-        });
+      setSelectedTags([...selectedTags, tag]);
     }
   };
 
@@ -48,13 +42,13 @@ const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags })
 
     console.log("Sending new tag to backend:", {
       name: trimmedName,
-      color: "#D1D5DB",
+      color: newTagColor,
     });
 
     fetch("http://localhost:8000/tags/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: trimmedName, color: "#D1D5DB" }),
+      body: JSON.stringify({ name: trimmedName, color: newTagColor }),
     })
       .then(async response => {
         if (!response.ok) {
@@ -81,13 +75,39 @@ const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags })
           <button
             key={tag.id}
             onClick={() => toggleTag(tag)}
-            className={`px-3 py-1 rounded-full text-sm ${
+            className={`pl-3 pr-1 py-1 rounded-full text-sm inline-flex items-center gap-1 ${
               selectedTags.some(t => t.id === tag.id)
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-black"
             }`}
           >
-            {tag.name}
+            <span className="flex items-center gap-1">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: tag.color }}
+              ></span>
+              {tag.name}
+            </span>
+            <span
+              title="Delete tag"
+              className="px-2 py-0.5 rounded-full text-base cursor-pointer hover:text-red-400"
+              onClick={async (e) => {
+                e.stopPropagation();
+                try {
+                  const response = await fetch(`http://localhost:8000/tags/${tag.id}`, {
+                    method: "DELETE",
+                  });
+                  if (response.ok) {
+                    setAvailableTags(prev => prev.filter(t => t.id !== tag.id));
+                    setSelectedTags(prev => prev.filter(t => t.id !== tag.id));
+                  }
+                } catch (err) {
+                  console.error("Error deleting tag:", err);
+                }
+              }}
+            >
+              &times;
+            </span>
           </button>
         ))}
       </div>
@@ -101,6 +121,12 @@ const TagSelector: React.FC<Props> = ({ noteId, selectedTags, setSelectedTags })
             setNewTagName(e.target.value);
           }}
           placeholder="New tag name"
+        />
+        <input
+          type="color"
+          value={newTagColor}
+          onChange={(e) => setNewTagColor(e.target.value)}
+          className="w-10 h-10 p-0 border border-gray-300 rounded"
         />
         <button
           type="button"

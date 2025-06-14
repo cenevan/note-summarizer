@@ -15,7 +15,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 def startup_event():
     init_db()
 
-@app.post("/upload/")
+@app.post("/upload/", response_model=schemas.Note)
 async def upload_note(
     file: UploadFile = File(...),
     title: str = Form(...),
@@ -26,7 +26,7 @@ async def upload_note(
     content = (await file.read()).decode("utf-8")
     summary, action_items = summarize_text(content, include_action_items)
     db_note = crud.create_note(db, title, content, summary, action_items, tags)
-    return {"summary": summary, "action_items": action_items}
+    return db_note
 
 @app.get("/notes/", response_model=list[schemas.Note])
 def get_notes(tags: Optional[list[str]] = Query(None), db: Session = Depends(get_db)):
@@ -86,6 +86,13 @@ def get_tags_for_note(note_id: int, db: Session = Depends(get_db)):
     tags = crud.get_tag_for_note(db, note_id)
     return tags
 
+@app.get("/tags/{tag_id}/notes", response_model=list[schemas.Note])
+def get_notes_by_tag(tag_id: int, db: Session = Depends(get_db)):
+    notes = crud.get_notes_by_tag(db, tag_id)
+    if not notes:
+        raise HTTPException(status_code=404, detail="No notes found for this tag")
+    return notes
+
 @app.delete("/tags/{tag_id}", response_model=schemas.Tag)
 def delete_tag(tag_id: int, db: Session = Depends(get_db)):
     deleted = crud.delete_tag(db, tag_id)
@@ -96,6 +103,13 @@ def delete_tag(tag_id: int, db: Session = Depends(get_db)):
 @app.post("/notes/{note_id}/tags/{tag_id}", response_model=schemas.Note)
 def assign_tag_to_note(note_id: int, tag_id: int, db: Session = Depends(get_db)):
     note = crud.assign_tag_to_note(db, note_id, tag_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note or Tag not found")
+    return note
+
+@app.delete("/notes/{note_id}/tags/{tag_id}", response_model=schemas.Note)
+def remove_tag_from_note(note_id: int, tag_id: int, db: Session = Depends(get_db)):
+    note = crud.remove_tag_from_note(db, note_id, tag_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note or Tag not found")
     return note
