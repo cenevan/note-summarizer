@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form, Depends, Query, HTTPExcepti
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, get_db
 from app.summarizer import summarize_text
-from app import crud, schemas
+from app import crud, schemas, auth
 from sqlalchemy.orm import Session
 from typing import Optional
 from sqlalchemy.exc import IntegrityError
@@ -112,3 +112,15 @@ def remove_tag_from_note(note_id: int, tag_id: int, db: Session = Depends(get_db
     if not note:
         raise HTTPException(status_code=404, detail="Note or Tag not found")
     return note
+
+@app.post("/register/")
+def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    return crud.register_user(db, user)
+
+@app.post("/login/")
+def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    return crud.login_user(db, user)
+
+@app.put("/users/me/api-key")
+def update_api_key(new_key: str, current_user_email: str = Depends(auth.get_current_user), db: Session = Depends(get_db)):
+    return crud.update_user_api_key(db, current_user_email, new_key)

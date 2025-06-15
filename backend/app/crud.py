@@ -2,6 +2,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app import models, schemas
+from fastapi import HTTPException
+from app import auth
 
 def create_note(db: Session, title: str, content: str, summary: str, action_items: str, created_at: str, tags: list[str]) -> models.Note:
     tag_objs = db.query(models.Tag).filter(models.Tag.name.in_(tags)).all()
@@ -127,3 +129,40 @@ def remove_tag_from_note(db: Session, note_id: int, tag_id: int) -> models.Note 
         db.refresh(note)
 
     return note
+
+def register_user(db: Session, user: schemas.UserCreate):
+    if db.query(models.User).filter(models.User.email == user.email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    if db.query(models.User).filter(models.User.username == user.username).first():
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    hashed = auth.hash_password(user.password)
+    db_user = models.User(
+        email=user.email,
+        username=user.username,
+        hashed_password=hashed,
+        openai_api_key=user.openai_api_key
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return {"msg": "User registered successfully"}
+
+def login_user(db: Session, user: schemas.UserCreate):
+    db_user = db.query(models.User).filter(
+        (models.User.email == user.email) | (models.User.username == user.username)
+    ).first()
+
+    if not db_user or not auth.verify_password(user.password, db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    token = auth.create_access_token({"sub": db_user.email})
+    return {"access_token": token, "token_type": "bearer"}
+
+def update_user_api_key(db: Session, current_user_email: str, new_key: str):
+    user = db.query(models.User).filter(models.User.email == current_user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.openai_api_key = new_key
+    db.commit()
+    return {"msg": "API key updated"}

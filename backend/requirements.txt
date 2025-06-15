@@ -6,3 +6,5 @@ pydantic
 python-dotenv
 openai
 python-multipart
+passlib[bcrypt]
+python-jose[cryptography]

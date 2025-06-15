@@ -43,3 +43,18 @@ class Tag(TagBase):
 
     class Config:
         orm_mode = True
+
+class UserCreate(BaseModel):
+    email: str
+    username: str
+    password: str
+    openai_api_key: str | None = None
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    username: str
+    openai_api_key: str | None = None
+
+    class Config:
+        orm_mode = True
