@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app import models, schemas
 
-def create_note(db: Session, title: str, content: str, summary: str, action_items: str, tags: list[str]) -> models.Note:
+def create_note(db: Session, title: str, content: str, summary: str, action_items: str, created_at: str, tags: list[str]) -> models.Note:
     tag_objs = db.query(models.Tag).filter(models.Tag.name.in_(tags)).all()
 
     note = models.Note(
@@ -11,6 +11,8 @@ def create_note(db: Session, title: str, content: str, summary: str, action_item
         content=content,
         summary=summary,
         action_items=action_items,
+        created_at=created_at,
+        updated_at=created_at,
         tags=tag_objs
     )
     db.add(note)
@@ -41,6 +43,7 @@ def update_note(
     title: str | None = None,
     content: str | None = None,
     summary: str | None = None,
+    updated_at: str | None = None,
     action_items: str | None = None
 ) -> models.Note | None:
     note = db.query(models.Note).filter(models.Note.id == note_id).first()
@@ -55,6 +58,8 @@ def update_note(
         note.summary = summary
     if action_items is not None:
         note.action_items = action_items
+    if updated_at is not None:
+        note.updated_at = updated_at
 
     db.commit()
     db.refresh(note)

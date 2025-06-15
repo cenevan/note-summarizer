@@ -40,12 +40,21 @@ export default function UploadPage() {
     formData.append("file", file);
     formData.append("title", noteTitle);
     formData.append("include_action_items", String(includeActionItems));
+    formData.append("created_at", new Date().toISOString());
     formData.append("tags", JSON.stringify(selectedTags.map(tag => tag.id)));
 
     setLoading(true);
     setResult(null);
     setError(null);
     setShowModal(false);
+
+    console.log("Submitting upload with data:", {
+      file: file.name,
+      title: noteTitle,
+      include_action_items: includeActionItems,
+      created_at: new Date().toISOString(),
+      tags: selectedTags.map(tag => tag.id),
+    });
 
     try {
       const res = await fetch("http://localhost:8000/upload/", {

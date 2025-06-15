@@ -7,6 +7,8 @@ class NoteBase(BaseModel):
     content: str
     summary: str
     action_items: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
 
 class NoteCreate(NoteBase):
     pass
@@ -23,6 +25,8 @@ class NoteUpdate(BaseModel):
     summary: str | None = None
     action_items: str | None = None
     include_action_items: Optional[bool] = True
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
 
     class Config:
         orm_mode = True

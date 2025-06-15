@@ -30,6 +30,8 @@ const NoteCard: React.FC<Props> = ({
   const [isRenaming, setIsRenaming] = useState(false);
   const [editedName, setEditedName] = useState(name);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [lastModified, setLastModified] = useState<string | null>(null);
+
   useEffect(() => {
     console.log("NoteCard useEffect triggered");
     if (tagsProp) {
@@ -44,11 +46,22 @@ const NoteCard: React.FC<Props> = ({
     }
   }, [noteId, tagsProp]);
 
+  useEffect(() => {
+    fetch(`http://localhost:8000/notes/${noteId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.updated_at) {
+          setLastModified(new Date(data.updated_at).toLocaleString());
+        }
+      })
+      .catch(err => console.error("Failed to fetch note metadata", err));
+  }, [noteId]);
+
   const changeName = async (editedName: string) => {
     const res = await fetch(`http://localhost:8000/notes/${noteId}/name`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editedName }),
+      body: JSON.stringify({ name: editedName, updated_at: new Date().toISOString() }),
     });
     if (res.ok) {
       setIsRenaming(false);
@@ -57,6 +70,18 @@ const NoteCard: React.FC<Props> = ({
     }
   }
 
+    // Helper to format date without seconds
+  const formatDateTime = (iso: string) => {
+    const date = new Date(iso);
+    return date.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <div className="bg-gray-800 border border-gray-700 p-6 rounded-xl shadow-lg text-white font-sans transition-all duration-300 hover:shadow-xl h-full flex flex-col justify-between">
       <div>
@@ -64,7 +89,7 @@ const NoteCard: React.FC<Props> = ({
           {isRenaming ? (
             <div className="flex items-center gap-2 mb-2">
               <input
-                className="text-3xl font-bold text-primary leading-tight break-words bg-transparent border-b border-primary focus:outline-none text-center"
+                className="text-xl font-bold text-primary leading-tight bg-transparent border-b border-primary focus:outline-none text-center w-48"
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 autoFocus
@@ -79,7 +104,7 @@ const NoteCard: React.FC<Props> = ({
             </div>
           ) : (
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-3xl font-bold text-primary leading-tight break-words text-center">
+              <h3 className="text-2xl font-bold text-primary leading-tight break-words text-center max-w-full overflow-hidden text-ellipsis whitespace-normal">
                 {editedName}
               </h3>
               <button
@@ -126,6 +151,11 @@ const NoteCard: React.FC<Props> = ({
               </span>
             ))}
           </div>
+        )}
+        {lastModified && (
+          <p className="text-xs text-gray-400 mt-2 text-center">
+            Last Modified: {formatDateTime(lastModified)}
+          </p>
         )}
       </div>
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mt-4">

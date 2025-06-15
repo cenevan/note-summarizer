@@ -9,6 +9,8 @@ interface Note {
   content: string;
   summary: string;
   action_items: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Tag {
@@ -32,6 +34,8 @@ export default function DisplayNote() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [showTagSelector, setShowTagSelector] = useState(false);
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const [lastModified, setLastModified] = useState<string | null>(null);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -41,7 +45,7 @@ export default function DisplayNote() {
     const res = await fetch(`http://localhost:8000/notes/${note.id}/name`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editedName }),
+      body: JSON.stringify({ name: editedName, updated_at: new Date().toISOString() }),
     });
     if (res.ok) {
       const updated = await res.json();
@@ -65,6 +69,8 @@ export default function DisplayNote() {
         console.log("Fetched note data:", data);
         setNote(data);
         setEditedName(data.name);
+        setCreatedAt(new Date(data.created_at).toLocaleString());
+        setLastModified(new Date(data.updated_at).toLocaleString());
         setLoading(false);
 
         fetch(`http://localhost:8000/tags/${id}`)
@@ -230,7 +236,7 @@ export default function DisplayNote() {
                     const res = await fetch(`http://localhost:8000/notes/${note.id}`, {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ content: editedContent, include_action_items: includeActionItems }),
+                      body: JSON.stringify({ content: editedContent, include_action_items: includeActionItems, updated_at: new Date().toISOString() }),
                     });
                     if (res.ok) {
                       const updated = await res.json();
@@ -288,6 +294,12 @@ export default function DisplayNote() {
           </section>
         )}
       </div>
+      {(createdAt || lastModified) && (
+        <div className="text-sm text-gray-400 mt-2 text-center">
+          {createdAt && <p>Created At: {createdAt}</p>}
+          {lastModified && <p>Last Modified: {lastModified}</p>}
+        </div>
+      )}
     </div>
   );
 }

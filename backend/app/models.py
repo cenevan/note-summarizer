@@ -25,5 +25,7 @@ class Note(Base):
     content = Column(Text)
     summary = Column(Text)
     action_items = Column(Text)
+    created_at = Column(String, index=True)
+    updated_at = Column(String, index=True)
     tags = relationship("Tag", secondary=note_tags, back_populates="notes")
 

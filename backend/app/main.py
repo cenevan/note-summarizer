@@ -20,12 +20,13 @@ async def upload_note(
     file: UploadFile = File(...),
     title: str = Form(...),
     include_action_items: bool = Form(True),
+    created_at: Optional[str] = Form(None),
     tags: list[str] = Form(default=[]),
     db: Session = Depends(get_db)
 ):
     content = (await file.read()).decode("utf-8")
     summary, action_items = summarize_text(content, include_action_items)
-    db_note = crud.create_note(db, title, content, summary, action_items, tags)
+    db_note = crud.create_note(db, title, content, summary, action_items, created_at, tags)
     return db_note
 
 @app.get("/notes/", response_model=list[schemas.Note])
@@ -51,7 +52,7 @@ def update_note(
     db: Session = Depends(get_db)
 ):
     summary, action_items = summarize_text(request.content, request.include_action_items)
-    updated_note = crud.update_note(db, note_id, None, request.content, summary, action_items)
+    updated_note = crud.update_note(db, note_id, None, request.content, summary, request.updated_at, action_items)
     if not updated_note:
         return {"error": "Note not found"}
     return updated_note
@@ -62,7 +63,7 @@ def update_note_name(
     request: schemas.NoteUpdate,
     db: Session = Depends(get_db)
 ):
-    updated_note = crud.update_note(db, note_id, title=request.name)
+    updated_note = crud.update_note(db, note_id, title=request.name, updated_at=request.updated_at)
     if not updated_note:
         return {"error": "Note not found"}
     return updated_note
