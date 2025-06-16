@@ -20,6 +20,18 @@ const Header: React.FC = () => (
         >
           My Notes
         </Link>
+        <Link
+          to="/login"
+          className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors"
+        >
+          Login
+        </Link>
+        <Link
+          to="/signup"
+          className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors"
+        >
+          Sign Up
+        </Link>
       </nav>
     </div>
   </header>

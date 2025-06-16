@@ -5,6 +5,8 @@ import MyNotes from "./pages/MyNotes.tsx";
 import DisplayNote from "./pages/DisplayNote.tsx";
 import Header from "./components/Header.tsx";
 import Footer from "./components/Footer.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import SignupPage from "./pages/SignUpPage.tsx";
 
 function App() {
   return (
@@ -88,6 +90,26 @@ function App() {
             <>
               <Header />
               <DisplayNote />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <>
+              <Header />
+              <LoginPage />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <>
+              <Header />
+              <SignupPage />
               <Footer />
             </>
           }

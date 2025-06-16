@@ -124,3 +124,8 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
 @app.put("/users/me/api-key")
 def update_api_key(new_key: str, current_user_email: str = Depends(auth.get_current_user), db: Session = Depends(get_db)):
     return crud.update_user_api_key(db, current_user_email, new_key)
+
+#Test endpoint to find current user
+@app.get("/users/me")
+def get_current_user_info(user_email: str = Depends(auth.get_current_user)):
+    return {"email": user_email}
