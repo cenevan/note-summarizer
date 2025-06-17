@@ -3,20 +3,34 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [loginMethod, setLoginMethod] = useState<"email" | "username">("email");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:8000/login/", {
+    const form = new URLSearchParams();
+    form.append("username", identifier); 
+    form.append("password", password);
+
+    const response = await fetch("http://localhost:8000/token", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: form.toString(),
     });
 
     const data = await response.json();
+    if (!response.ok) {
+      setError(data.detail || "Login failed. Please try again.");
+      return;
+    }
+    setError(null);
+
     console.log("Login response:", data);
 
     if (data.access_token) {
@@ -27,14 +41,40 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-blue-50">
+      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-        <label className="block mb-2 font-medium">Email</label>
+        <div className="mb-4">
+          <label className="mr-4">
+            <input
+              type="radio"
+              value="email"
+              checked={loginMethod === "email"}
+              onChange={() => setLoginMethod("email")}
+              className="mr-1"
+            />
+            Email
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="username"
+              checked={loginMethod === "username"}
+              onChange={() => setLoginMethod("username")}
+              className="mr-1 ml-4"
+            />
+            Username
+          </label>
+        </div>
+
+        <label className="block mb-2 font-medium">
+          {loginMethod === "email" ? "Email" : "Username"}
+        </label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type={loginMethod === "email" ? "email" : "text"}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded mb-4"
           required
         />

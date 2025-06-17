@@ -7,6 +7,7 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [openaiKey, setOpenaiKey] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -24,8 +25,13 @@ export default function SignupPage() {
     });
 
     const data = await response.json();
-    console.log("Signup response:", data);
 
+    if (!response.ok) {
+      setError(data.detail || "Signup failed. Please try again.");
+      return;
+    }
+
+    setError(null);
     if (data.access_token) {
       localStorage.setItem("token", data.access_token);
       navigate("/");
@@ -34,6 +40,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-blue-50">
+      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleSignup} className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
 

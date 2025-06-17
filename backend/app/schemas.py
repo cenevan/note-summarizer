@@ -1,5 +1,6 @@
 # app/schemas.py
 from pydantic import BaseModel
+from pydantic import model_validator
 from typing import Optional
 
 class NoteBase(BaseModel):

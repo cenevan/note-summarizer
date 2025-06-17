@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form, Depends, Query, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, get_db
 from app.summarizer import summarize_text
@@ -115,17 +116,29 @@ def remove_tag_from_note(note_id: int, tag_id: int, db: Session = Depends(get_db
 
 @app.post("/register/")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.register_user(db, user)
+    new_user = crud.register_user(db, user)
+    access_token = auth.create_access_token(data={"sub": new_user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/login/")
-def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.login_user(db, user)
+@app.post("/token")
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    user = db.query(auth.User).filter(
+        (auth.User.email == form_data.username) | (auth.User.username == form_data.username)
+    ).first()
+
+    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+
+    access_token = auth.create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.put("/users/me/api-key")
 def update_api_key(new_key: str, current_user_email: str = Depends(auth.get_current_user), db: Session = Depends(get_db)):
     return crud.update_user_api_key(db, current_user_email, new_key)
 
-#Test endpoint to find current user
 @app.get("/users/me")
 def get_current_user_info(user_email: str = Depends(auth.get_current_user)):
     return {"email": user_email}
