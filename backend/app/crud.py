@@ -155,3 +155,12 @@ def update_user_api_key(db: Session, current_user_email: str, new_key: str):
     user.openai_api_key = new_key
     db.commit()
     return {"msg": "API key updated"}
+
+def authenticate_user(db: Session, identifier: str, password: str):
+    user = db.query(models.User).filter(
+        (models.User.email == identifier) | (models.User.username == identifier)
+    ).first()
+
+    if user and auth.verify_password(password, user.hashed_password):
+        return user
+    return None

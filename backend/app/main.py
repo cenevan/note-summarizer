@@ -125,11 +125,8 @@ def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    user = db.query(auth.User).filter(
-        (auth.User.email == form_data.username) | (auth.User.username == form_data.username)
-    ).first()
-
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+    user = crud.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
 
     access_token = auth.create_access_token(data={"sub": user.email})
@@ -140,5 +137,5 @@ def update_api_key(new_key: str, current_user_email: str = Depends(auth.get_curr
     return crud.update_user_api_key(db, current_user_email, new_key)
 
 @app.get("/users/me")
-def get_current_user_info(user_email: str = Depends(auth.get_current_user)):
-    return {"email": user_email}
+def get_current_user_info(current_user: schemas.UserOut = Depends(auth.get_current_user)):
+    return current_user

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const [loginMethod, setLoginMethod] = useState<"email" | "username">("email");
@@ -8,6 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { setIsLoggedIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ export default function LoginPage() {
 
     if (data.access_token) {
       localStorage.setItem("token", data.access_token);
+      setIsLoggedIn(true);
       navigate("/");
     }
   };

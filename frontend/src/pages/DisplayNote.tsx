@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import TagSelector from "../components/TagSelector";
 import { useParams, Link } from "react-router-dom";
 import ActionItemsToggle from "../components/ActionItemsToggle";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 interface Note {
   id: number;
@@ -20,6 +22,13 @@ interface Tag {
 }
 
 export default function DisplayNote() {
+  const { isLoggedIn, isAuthInitialized } = useAuth();
+  if (!isAuthInitialized) {
+    return null; // or a loading spinner
+  }
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
   const { id } = useParams();
   console.log("DisplayNote mounted, id:", id);
 

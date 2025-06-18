@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import { Navigate } from "react-router-dom";
 import UploadPage from "./pages/UploadPage.tsx";
 import MyNotes from "./pages/MyNotes.tsx";
 import DisplayNote from "./pages/DisplayNote.tsx";
@@ -7,8 +9,11 @@ import Header from "./components/Header.tsx";
 import Footer from "./components/Footer.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import SignupPage from "./pages/SignUpPage.tsx";
+import Profile from "./pages/Profile";
 
 function App() {
+  const { isLoggedIn, isAuthInitialized } = useAuth();
+  if (!isAuthInitialized) return null;
   return (
     <Router>
       <Routes>
@@ -67,21 +72,29 @@ function App() {
         <Route
           path="/upload"
           element={
-            <>
-              <Header />
-              <UploadPage />
-              <Footer />
-            </>
+            isAuthInitialized && isLoggedIn ? (
+              <>
+                <Header />
+                <UploadPage />
+                <Footer />
+              </>
+            ) : (
+              isAuthInitialized && <Navigate to="/login" />
+            )
           }
         />
         <Route
           path="/notes"
           element={
-            <>
-              <Header />
-              <MyNotes />
-              <Footer />
-            </>
+            isAuthInitialized && isLoggedIn ? (
+              <>
+                <Header />
+                <MyNotes />
+                <Footer />
+              </>
+            ) : (
+              isAuthInitialized && <Navigate to="/login" />
+            )
           }
         />
         <Route
@@ -92,6 +105,20 @@ function App() {
               <DisplayNote />
               <Footer />
             </>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isAuthInitialized && isLoggedIn ? (
+              <>
+                <Header />
+                <Profile />
+                <Footer />
+              </>
+            ) : (
+              isAuthInitialized && <Navigate to="/login" />
+            )
           }
         />
         <Route

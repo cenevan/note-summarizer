@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,7 @@ export default function SignupPage() {
   const [openaiKey, setOpenaiKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { setIsLoggedIn } = useAuth();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +36,7 @@ export default function SignupPage() {
     setError(null);
     if (data.access_token) {
       localStorage.setItem("token", data.access_token);
+      setIsLoggedIn(true);
       navigate("/");
     }
   };
