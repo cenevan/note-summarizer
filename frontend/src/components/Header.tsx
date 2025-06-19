@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-//import { ReactComponent as UserIcon } from "../assets/user.svg"; // assuming you place your icon in this path
+import {
+  UserCircleIcon,
+  ArrowLeftOnRectangleIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+  ArrowUpTrayIcon,
+  DocumentTextIcon
+} from "@heroicons/react/24/outline";
 
 const Header: React.FC = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -51,28 +58,31 @@ const Header: React.FC = () => {
         <nav className="flex gap-2">
           {isLoggedIn ? (
             <>
-              <Link to="/upload" className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors">
+              <Link to="/upload" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
+                <ArrowUpTrayIcon className="w-5 h-5 mr-1" />
                 Upload
               </Link>
-              <Link to="/notes" className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors">
+              <Link to="/notes" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
+                <DocumentTextIcon className="w-5 h-5 mr-1" />
                 My Notes
               </Link>
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 text-xl font-semibold text-white hover:bg-gray-800 rounded transition-colors"
+                  className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
                 >
-                  {/** <UserIcon className="w-6 h-6" /> **/}
+                  <UserCircleIcon className="w-6 h-6" />
                   {username}
                 </button>
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-44 bg-white text-black rounded-lg shadow-lg z-50 animate-fadeSlideDown"
+                    className="absolute right-0 mt-2 w-44 bg-white text-black rounded-lg shadow-lg z-50 transform transition-transform duration-200 ease-out origin-top scale-100 opacity-100"
                   >
                     <button
                       onClick={() => navigate("/profile")}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-lg"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-lg flex items-center"
                     >
+                      <Cog6ToothIcon className="w-5 h-5 mr-2 inline" />
                       Profile
                     </button>
                     <button
@@ -80,8 +90,9 @@ const Header: React.FC = () => {
                         localStorage.removeItem("token");
                         setIsLoggedIn(false);
                       }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg flex items-center"
                     >
+                      <ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2 inline" />
                       Logout
                     </button>
                   </div>
@@ -90,10 +101,12 @@ const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors">
+              <Link to="/login" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
+                <ArrowRightOnRectangleIcon className="w-5 h-5 mr-1" />
                 Login
               </Link>
-              <Link to="/signup" className="px-4 py-2 text-xl font-semibold border border-transparent text-white hover:border-white hover:bg-gray-800 rounded transition-colors">
+              <Link to="/signup" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
+                <UserCircleIcon className="w-5 h-5 mr-1" />
                 Sign Up
               </Link>
             </>

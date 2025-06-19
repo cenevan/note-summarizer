@@ -22,10 +22,10 @@ module.exports = {
         serif: ['Georgia', 'serif'],
       },
       animation: {
-        fadeSlideDown: 'fadeSlideDown 0.2s ease-out',
+        'fade-slide-down': 'fade-slide-down 0.2s ease-out forwards',
       },
       keyframes: {
-        fadeSlideDown: {
+        'fade-slide-down': {
           '0%': {
             opacity: '0',
             transform: 'translateY(-8px)',

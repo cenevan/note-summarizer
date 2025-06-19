@@ -3,6 +3,15 @@ import { Link } from "react-router-dom";
 import ActionItemToggle from "../components/ActionItemsToggle";
 import TagSelector from "../components/TagSelector";
 import NoteCard from "../components/NoteCard";
+import {
+  ArrowUpTrayIcon,
+  PencilSquareIcon,
+  XMarkIcon,
+  DocumentArrowUpIcon,
+  InboxArrowDownIcon,
+  LightBulbIcon,
+  SparklesIcon
+} from "@heroicons/react/24/outline";
 
 interface Result {
   id: number;
@@ -85,16 +94,18 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
-      <h1 className="text-5xl font-extrabold tracking-tight text-primary drop-shadow-lg text-center">
-        📝 Upload a Note
+      <h1 className="text-5xl font-extrabold tracking-tight text-primary drop-shadow-lg text-center flex items-center gap-3">
+        <DocumentArrowUpIcon className="w-10 h-10 text-primary" />
+        Upload a Note
       </h1>
 
       <div className="flex flex-col items-center space-y-6 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-md border border-white/20 w-full max-w-2xl">
         <label
           htmlFor="file-upload"
-          className="cursor-pointer px-5 py-3 bg-gray-800 text-white border border-gray-500 rounded-full hover:bg-gray-700"
+          className="cursor-pointer px-5 py-3 bg-gray-800 text-white border border-gray-500 rounded-full hover:bg-gray-700 flex items-center gap-2"
         >
-          📁 Select a Note File
+          <ArrowUpTrayIcon className="w-5 h-5" />
+          Select a Note File
         </label>
         <input
           id="file-upload"
@@ -113,13 +124,18 @@ export default function UploadPage() {
         <button
           onClick={handleUpload}
           disabled={!file || loading}
-          className={`px-6 py-2 rounded-full text-white transition font-semibold ${
+          className={`px-6 py-2 rounded-full text-white transition font-semibold flex items-center justify-center gap-2 ${
             loading || !file
               ? "bg-blue-300 cursor-not-allowed"
               : "bg-primary hover:bg-blue-600"
           }`}
         >
-          {loading ? "Summarizing..." : "Upload & Summarize"}
+          {loading ? "Summarizing..." : (
+            <>
+              <InboxArrowDownIcon className="w-5 h-5" />
+              Upload & Summarize
+            </>
+          )}
         </button>
 
         {error && <p className="text-red-500 mt-4">{error}</p>}
@@ -151,7 +167,10 @@ export default function UploadPage() {
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white text-black rounded-md p-6 w-96">
-            <h2 className="text-xl font-semibold mb-4">Name Your Note</h2>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <PencilSquareIcon className="w-5 h-5" />
+              Name Your Note
+            </h2>
             <input
               type="text"
               value={noteTitle}
@@ -163,14 +182,16 @@ export default function UploadPage() {
             <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-300 text-black"
+                className="px-4 py-2 rounded-md bg-gray-300 text-black flex items-center justify-center"
               >
+                <XMarkIcon className="w-5 h-5 inline mr-1" />
                 Cancel
               </button>
               <button
                 onClick={submitUpload}
-                className="px-4 py-2 rounded-md bg-blue-500 text-white"
+                className="px-4 py-2 rounded-md bg-blue-500 text-white flex items-center justify-center"
               >
+                <ArrowUpTrayIcon className="w-5 h-5 inline mr-1" />
                 Submit
               </button>
             </div>
@@ -181,15 +202,24 @@ export default function UploadPage() {
       {/* Future Enhancements Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full mt-14">
         <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">📈 Upload History</h2>
+          <h2 className="text-xl font-semibold mb-2 flex items-center">
+            <LightBulbIcon className="w-5 h-5 inline mr-1 text-primary" />
+            Upload History
+          </h2>
           <p className="text-sm text-gray-300">Track notes you’ve previously uploaded and summarized.</p>
         </div>
         <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">💡 Tips for Better Summaries</h2>
+          <h2 className="text-xl font-semibold mb-2 flex items-center">
+            <LightBulbIcon className="w-5 h-5 inline mr-1 text-primary" />
+            Tips for Better Summaries
+          </h2>
           <p className="text-sm text-gray-300">Learn how to write notes that generate clearer summaries and actions.</p>
         </div>
         <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg">
-          <h2 className="text-xl font-semibold mb-2">✍️ Coming Soon: Drafting Workspace</h2>
+          <h2 className="text-xl font-semibold mb-2 flex items-center">
+            <SparklesIcon className="w-5 h-5 inline mr-1 text-primary" />
+            Coming Soon: Drafting Workspace
+          </h2>
           <p className="text-sm text-gray-300">Use context-aware AI to write and improve notes directly in the app.</p>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { PencilSquareIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 interface Tag {
   id: number;
@@ -96,10 +97,10 @@ const NoteCard: React.FC<Props> = ({
               />
               <button
                 onClick={() => changeName(editedName)}
-                className="text-sm text-green-600 hover:text-green-800 px-4 py-2 bg-gray-800 rounded-md"
+                className="text-sm px-3 py-1 rounded-md border border-green-400 text-green-400 hover:bg-green-800 transition"
                 title="Save Name"
               >
-                Save
+                <CheckIcon className="w-4 h-4" />
               </button>
             </div>
           ) : (
@@ -112,7 +113,7 @@ const NoteCard: React.FC<Props> = ({
                 className="text-sm text-accent hover:text-white"
                 title="Rename Note"
               >
-                ✏️
+                <PencilSquareIcon className="w-5 h-5 text-accent hover:text-white" />
               </button>
             </div>
           )}
@@ -179,7 +180,8 @@ const NoteCard: React.FC<Props> = ({
           onClick={() => onDelete(noteId)}
           className="text-sm px-3 py-1 rounded-md border border-red-400 text-red-400 hover:bg-red-800 transition"
         >
-          Delete
+          <TrashIcon className="w-4 h-4 inline mr-1" />
+          <span>Delete</span>
         </button>
       </div>
     </div>

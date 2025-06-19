@@ -1,5 +1,13 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+  KeyIcon,
+  EyeIcon,
+  EyeSlashIcon
+} from "@heroicons/react/24/outline";
 
 export default function Profile() {
   const [user, setUser] = useState({ username: "", email: "", openai_api_key: "" });
@@ -31,32 +39,54 @@ export default function Profile() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-500 uppercase">Username</label>
+              <label className="block text-sm font-semibold text-gray-500 uppercase flex items-center gap-2">
+                <UserIcon className="w-4 h-4" />
+                Username
+              </label>
               <div className="mt-1 text-lg text-gray-800">{user.username}</div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-500 uppercase">Email</label>
+              <label className="block text-sm font-semibold text-gray-500 uppercase flex items-center gap-2">
+                <EnvelopeIcon className="w-4 h-4" />
+                Email
+              </label>
               <div className="mt-1 text-lg text-gray-800">{user.email}</div>
             </div>
           </div>
 
           <div className="border-t pt-6">
-            <label className="block text-sm font-semibold text-gray-500 uppercase mb-1">Password</label>
+            <label className="block text-sm font-semibold text-gray-500 uppercase mb-1 flex items-center gap-2">
+              <LockClosedIcon className="w-4 h-4" />
+              Password
+            </label>
             <div className="flex items-center gap-3">
               <span className="text-gray-800 text-lg">
                 {showPassword ? "••••••••" : "********"}
               </span>
               <button
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition"
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
               >
-                {showPassword ? "Hide" : "Reveal"}
+                {showPassword ? (
+                  <>
+                    <EyeSlashIcon className="w-4 h-4" />
+                    Hide
+                  </>
+                ) : (
+                  <>
+                    <EyeIcon className="w-4 h-4" />
+                    Reveal
+                  </>
+                )}
               </button>
             </div>
           </div>
 
           <div className="border-t pt-6">
-            <label className="block text-sm font-semibold text-gray-500 uppercase mb-1">OpenAI API Key</label>
+            <label className="block text-sm font-semibold text-gray-500 uppercase mb-1 flex items-center gap-2">
+              <KeyIcon className="w-4 h-4" />
+              OpenAI API Key
+            </label>
             <div className="flex items-center gap-3">
               <span className="text-gray-800 text-lg break-all">
                 {showApiKey
@@ -65,9 +95,19 @@ export default function Profile() {
               </span>
               <button
                 onClick={() => setShowApiKey(!showApiKey)}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition"
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
               >
-                {showApiKey ? "Hide" : "Reveal"}
+                {showApiKey ? (
+                  <>
+                    <EyeSlashIcon className="w-4 h-4" />
+                    Hide
+                  </>
+                ) : (
+                  <>
+                    <EyeIcon className="w-4 h-4" />
+                    Reveal
+                  </>
+                )}
               </button>
             </div>
           </div>

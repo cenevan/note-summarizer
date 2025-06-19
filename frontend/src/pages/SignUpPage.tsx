@@ -2,6 +2,13 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+  EnvelopeIcon,
+  UserIcon,
+  LockClosedIcon,
+  KeyIcon,
+  ArrowRightCircleIcon
+} from "@heroicons/react/24/outline";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -47,7 +54,10 @@ export default function SignupPage() {
       <form onSubmit={handleSignup} className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
 
-        <label className="block mb-2 font-medium">Email</label>
+        <label className="block mb-2 font-medium flex items-center gap-2">
+          <EnvelopeIcon className="w-5 h-5" />
+          Email
+        </label>
         <input
           type="email"
           value={email}
@@ -56,7 +66,10 @@ export default function SignupPage() {
           required
         />
 
-        <label className="block mb-2 font-medium">Username</label>
+        <label className="block mb-2 font-medium flex items-center gap-2">
+          <UserIcon className="w-5 h-5" />
+          Username
+        </label>
         <input
           type="text"
           value={username}
@@ -65,7 +78,10 @@ export default function SignupPage() {
           required
         />
 
-        <label className="block mb-2 font-medium">Password</label>
+        <label className="block mb-2 font-medium flex items-center gap-2">
+          <LockClosedIcon className="w-5 h-5" />
+          Password
+        </label>
         <input
           type="password"
           value={password}
@@ -74,7 +90,10 @@ export default function SignupPage() {
           required
         />
 
-        <label className="block mb-2 font-medium">OpenAI API Key (optional)</label>
+        <label className="block mb-2 font-medium flex items-center gap-2">
+          <KeyIcon className="w-5 h-5" />
+          OpenAI API Key (optional)
+        </label>
         <input
           type="text"
           value={openaiKey}
@@ -84,8 +103,9 @@ export default function SignupPage() {
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
+          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition flex items-center justify-center gap-2"
         >
+          <ArrowRightCircleIcon className="w-5 h-5" />
           Sign Up
         </button>
       </form>

@@ -10,6 +10,13 @@ import Footer from "./components/Footer.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import SignupPage from "./pages/SignUpPage.tsx";
 import Profile from "./pages/Profile";
+import {
+  ArrowUpTrayIcon,
+  ClipboardDocumentListIcon,
+  ClockIcon,
+  LightBulbIcon,
+  PencilSquareIcon
+} from "@heroicons/react/24/outline";
 
 function App() {
   const { isLoggedIn, isAuthInitialized } = useAuth();
@@ -35,14 +42,16 @@ function App() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
                     to="/upload"
-                    className="px-6 py-3 bg-primary text-white border border-blue-400 rounded-full text-lg font-medium hover:bg-blue-600 transition"
+                    className="px-6 py-3 bg-primary text-white border border-blue-400 rounded-full text-lg font-medium hover:bg-blue-600 transition flex items-center gap-2 justify-center"
                   >
+                    <ArrowUpTrayIcon className="w-5 h-5" />
                     Upload a Note
                   </Link>
                   <Link
                     to="/notes"
-                    className="px-6 py-3 border-2 border-primary text-primary rounded-full text-lg font-medium hover:bg-gray-600 hover:text-white transition"
+                    className="px-6 py-3 border-2 border-primary text-primary rounded-full text-lg font-medium hover:bg-gray-600 hover:text-white transition flex items-center gap-2 justify-center"
                   >
+                    <ClipboardDocumentListIcon className="w-5 h-5" />
                     View My Notes
                   </Link>
                 </div>
@@ -50,17 +59,26 @@ function App() {
                 <div className="mt-12 w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Placeholder components for future enhancements */}
                   <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-lg">
-                    <h2 className="text-xl font-semibold mb-2">📌 Recent Summaries</h2>
+                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+                      <ClockIcon className="w-5 h-5 text-primary" />
+                      Recent Summaries
+                    </h2>
                     <p className="text-sm text-gray-300">See your most recently uploaded and summarized notes.</p>
                   </div>
 
                   <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-lg">
-                    <h2 className="text-xl font-semibold mb-2">🧠 Smart Suggestions</h2>
+                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+                      <LightBulbIcon className="w-5 h-5 text-primary" />
+                      Smart Suggestions
+                    </h2>
                     <p className="text-sm text-gray-300">Let AI recommend actions or follow-ups based on your notes.</p>
                   </div>
 
                   <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-lg">
-                    <h2 className="text-xl font-semibold mb-2">📂 Draft Notes</h2>
+                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+                      <PencilSquareIcon className="w-5 h-5 text-primary" />
+                      Draft Notes
+                    </h2>
                     <p className="text-sm text-gray-300">Access drafts you’re currently working on or editing.</p>
                   </div>
                 </div>

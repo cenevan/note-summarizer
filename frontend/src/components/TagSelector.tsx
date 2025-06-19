@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import {
+  TagIcon,
+  TrashIcon,
+  PlusCircleIcon
+} from "@heroicons/react/24/outline";
 
 interface Tag {
   id: number;
@@ -69,7 +74,10 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <label className="block text-sm font-medium mb-1">Tags</label>
+      <label className="block text-sm font-medium mb-1 flex items-center gap-1 justify-center">
+        <TagIcon className="w-4 h-4 text-primary" />
+        Tags
+      </label>
       <div className="flex flex-wrap gap-2 mb-2 justify-center">
         {availableTags.map(tag => (
           <button
@@ -106,7 +114,7 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
                 }
               }}
             >
-              &times;
+              <TrashIcon className="w-4 h-4 text-black hover:text-red-400" />
             </span>
           </button>
         ))}
@@ -131,9 +139,10 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
         <button
           type="button"
           onClick={handleCreateTag}
-          className="bg-green-500 text-white px-3 py-1 rounded text-sm"
+          className="bg-green-500 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
         >
-          Create Tag
+          <PlusCircleIcon className="w-4 h-4" />
+          <span>Create</span>
         </button>
       </div>
       {error && (
