@@ -164,7 +164,7 @@ def remove_tag_from_note(
 @app.post("/register/")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = crud.register_user(db, user)
-    access_token = auth.create_access_token(data={"sub": new_user.email})
+    access_token = auth.create_access_token(data={"sub": str(new_user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/token")
@@ -176,7 +176,7 @@ def login_for_access_token(
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
 
-    access_token = auth.create_access_token(data={"sub": user.email})
+    access_token = auth.create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.put("/users/me/api-key")

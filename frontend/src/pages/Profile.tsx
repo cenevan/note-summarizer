@@ -16,6 +16,8 @@ export default function Profile() {
   const [user, setUser] = useState({ username: "", email: "", openai_api_key: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [editing, setEditing] = useState({
     username: false,
     email: false,
@@ -125,9 +127,15 @@ export default function Profile() {
         body: JSON.stringify(body),
       });
       if (res.ok) {
+        // Parse response and store new access_token if present (for username/email update)
+        const data = await res.json();
+        if (data.access_token) {
+          localStorage.setItem("token", data.access_token);
+        }
+        // Use the latest token for fetching user info
         const refreshed = await fetch("http://localhost:8000/users/me", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token") || token}`,
           },
         });
         if (refreshed.ok) {
@@ -142,7 +150,11 @@ export default function Profile() {
           });
         }
         setEditing(prev => ({ ...prev, [field]: false }));
-        setFeedback(prev => ({ ...prev, [field]: successMsg }));
+        const message = field === "password" ? "Password updated successfully." : successMsg;
+        setFeedback(prev => ({ ...prev, [field]: message }));
+        setTimeout(() => {
+          setFeedback(prev => ({ ...prev, [field]: "" }));
+        }, 3000);
       } else {
         const data = await res.json();
         setFeedback(prev => ({ ...prev, [field]: data.detail || "Update failed." }));
@@ -275,25 +287,43 @@ export default function Profile() {
                   <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="currentPassword">
                     Current Password
                   </label>
-                  <input
-                    id="currentPassword"
-                    type="password"
-                    value={formData.currentPassword}
-                    onChange={(e) => handleChange("currentPassword", e.target.value)}
-                    className="border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="currentPassword"
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={formData.currentPassword}
+                      onChange={(e) => handleChange("currentPassword", e.target.value)}
+                      className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                      type="button"
+                    >
+                      {showCurrentPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex flex-col">
                   <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="newPassword">
                     New Password
                   </label>
-                  <input
-                    id="newPassword"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.newPassword}
-                    onChange={(e) => handleChange("newPassword", e.target.value)}
-                    className="border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="newPassword"
+                      type={showNewPassword ? "text" : "password"}
+                      value={formData.newPassword}
+                      onChange={(e) => handleChange("newPassword", e.target.value)}
+                      className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                      type="button"
+                    >
+                      {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="ml-auto flex gap-2">
