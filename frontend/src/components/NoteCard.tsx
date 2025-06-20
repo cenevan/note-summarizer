@@ -40,7 +40,11 @@ const NoteCard: React.FC<Props> = ({
       setTags(tagsProp);
     } else {
       console.log("Fetching tags for noteId:", noteId);
-      fetch(`http://localhost:8000/tags/${noteId}`)
+      fetch(`http://localhost:8000/tags/${noteId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
         .then(res => res.json())
         .then(data => setTags(data))
         .catch(err => console.error("Failed to fetch tags", err));
@@ -48,7 +52,11 @@ const NoteCard: React.FC<Props> = ({
   }, [noteId, tagsProp]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/notes/${noteId}`)
+    fetch(`http://localhost:8000/notes/${noteId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         if (data.updated_at) {
@@ -61,7 +69,10 @@ const NoteCard: React.FC<Props> = ({
   const changeName = async (editedName: string) => {
     const res = await fetch(`http://localhost:8000/notes/${noteId}/name`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ name: editedName, updated_at: new Date().toISOString() }),
     });
     if (res.ok) {
@@ -138,6 +149,9 @@ const NoteCard: React.FC<Props> = ({
                     try {
                       const response = await fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
                         method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
                       });
                       if (response.ok) {
                         setTags(prev => prev.filter(t => t.id !== tag.id));

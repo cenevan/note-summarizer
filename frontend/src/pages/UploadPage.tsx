@@ -68,10 +68,20 @@ export default function UploadPage() {
     try {
       const res = await fetch("http://localhost:8000/upload/", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) {
+        const errorData = await res.json();
+        if (errorData.detail?.toLowerCase().includes("openai api key")) {
+          throw new Error("Your OpenAI API key appears to be invalid or missing. Please check your profile settings.");
+        } else {
+          throw new Error(errorData.detail || "Upload failed");
+        }
+      }
 
       const data = await res.json();
       setResult(data);
@@ -82,11 +92,18 @@ export default function UploadPage() {
         for (const tag of selectedTags) {
           await fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
           });
         }
       }
-    } catch (err) {
-      setError("Something went wrong while uploading the file.");
+    } catch (err: any) {
+      if (err.message?.toLowerCase().includes("openai api key")) {
+        setError("Your OpenAI API key appears to be invalid or missing. Please check your profile settings.");
+      } else {
+        setError(err.message || "Something went wrong while uploading the file.");
+      }
     } finally {
       setLoading(false);
     }
@@ -138,7 +155,11 @@ export default function UploadPage() {
           )}
         </button>
 
-        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {error && (
+          <div className="mt-4 w-full max-w-2xl bg-red-100 text-red-700 border border-red-400 rounded-md px-4 py-3">
+            <strong className="font-semibold">Error:</strong> {error}
+          </div>
+        )}
       </div>
 
       {result && (
@@ -151,7 +172,12 @@ export default function UploadPage() {
               actionItems={result.action_items}
               tagsProp={selectedTags}
               onDelete={async (id: number) => {
-                const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
+                const res = await fetch(`http://localhost:8000/notes/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                  }
+                });
                 if (res.ok) {
                   setResult(null);
                 } else {

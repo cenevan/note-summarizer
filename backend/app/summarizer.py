@@ -1,44 +1,47 @@
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def summarize_text(text: str, include_action_items: bool = True) -> tuple[str, str]:
-    if include_action_items:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Summarize this note clearly and concisely. "
-                        "Then, extract a list of action items. "
-                        "Format the response as:\n\n"
-                        "Summary:\n<summary here>\n\n"
-                        "Action Items:\n- item 1\n- item 2\n- item 3"
-                    )
-                },
-                {"role": "user", "content": text}
-            ],
-            temperature=0.7,
-        )
-    else:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Summarize this note clearly and concisely. "
-                        "Do not include action items."
-                    )
-                },
-                {"role": "user", "content": text}
-            ],
-            temperature=0.7,
-        )
+def summarize_text(text: str, user_openai_api_key: str, include_action_items: bool = True) -> tuple[str, str]:
+    if not user_openai_api_key or not user_openai_api_key.strip():
+        raise ValueError("No OpenAI API key found. Please add your key in your profile settings.")
+    client = OpenAI(api_key=user_openai_api_key)
+    try:
+        if include_action_items:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Summarize this note clearly and concisely. "
+                            "Then, extract a list of action items. "
+                            "Format the response as:\n\n"
+                            "Summary:\n<summary here>\n\n"
+                            "Action Items:\n- item 1\n- item 2\n- item 3"
+                        )
+                    },
+                    {"role": "user", "content": text}
+                ],
+                temperature=0.7,
+            )
+        else:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Summarize this note clearly and concisely. "
+                            "Do not include action items."
+                        )
+                    },
+                    {"role": "user", "content": text}
+                ],
+                temperature=0.7,
+            )
+    except Exception as e:
+        raise ValueError("Invalid or missing OpenAI API key.") from e
     
     content = response.choices[0].message.content
 

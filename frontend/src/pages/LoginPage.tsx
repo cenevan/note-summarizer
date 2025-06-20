@@ -6,13 +6,16 @@ import {
   EnvelopeIcon,
   UserIcon,
   LockClosedIcon,
-  ArrowRightCircleIcon
+  ArrowRightCircleIcon,
+  EyeIcon,
+  EyeSlashIcon
 } from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   const [loginMethod, setLoginMethod] = useState<"email" | "username">("email");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { setIsLoggedIn } = useAuth();
@@ -50,7 +53,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-blue-50">
-      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
@@ -97,13 +99,28 @@ export default function LoginPage() {
           <LockClosedIcon className="w-5 h-5" />
           Password
         </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-6"
-          required
-        />
+        <div className="relative mb-6">
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded pr-10"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="w-5 h-5" />
+            ) : (
+              <EyeIcon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
 
         <button
           type="submit"

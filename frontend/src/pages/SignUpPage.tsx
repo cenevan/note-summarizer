@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [openaiKey, setOpenaiKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -21,6 +22,11 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
     const response = await fetch("http://localhost:8000/register/", {
       method: "POST",
@@ -50,7 +56,6 @@ export default function SignupPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-blue-50">
-      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleSignup} className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
 
@@ -91,6 +96,18 @@ export default function SignupPage() {
         />
 
         <label className="block mb-2 font-medium flex items-center gap-2">
+          <LockClosedIcon className="w-5 h-5" />
+          Confirm Password
+        </label>
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded mb-4"
+          required
+        />
+
+        <label className="block mb-2 font-medium flex items-center gap-2">
           <KeyIcon className="w-5 h-5" />
           OpenAI API Key (optional)
         </label>
@@ -100,6 +117,8 @@ export default function SignupPage() {
           onChange={(e) => setOpenaiKey(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded mb-6"
         />
+
+        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
 
         <button
           type="submit"

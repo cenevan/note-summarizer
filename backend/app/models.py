@@ -15,6 +15,8 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
     color = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="tags")
     notes = relationship("Note", secondary=note_tags, back_populates="tags")
 
 class Note(Base):
@@ -27,6 +29,8 @@ class Note(Base):
     action_items = Column(Text)
     created_at = Column(String, index=True)
     updated_at = Column(String, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="notes")
     tags = relationship("Tag", secondary=note_tags, back_populates="notes")
 
 class User(Base):
@@ -37,4 +41,5 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     openai_api_key = Column(String, nullable=True)  # Optional at signup
-
+    notes = relationship("Note", back_populates="user")
+    tags = relationship("Tag", back_populates="user")

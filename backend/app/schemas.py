@@ -16,6 +16,7 @@ class NoteCreate(NoteBase):
 
 class Note(NoteBase):
     id: int
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -41,6 +42,7 @@ class TagCreate(TagBase):
 
 class Tag(TagBase):
     id: int
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -59,3 +61,15 @@ class UserOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class UpdateUsername(BaseModel):
+    new_username: str
+
+class UpdateEmail(BaseModel):
+    new_email: str
+
+class UpdatePassword(BaseModel):
+    new_password: str
+
+class UpdateAPIKey(BaseModel):
+    new_key: str

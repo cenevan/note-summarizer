@@ -31,12 +31,20 @@ export default function MyNotes() {
   useEffect(() => {
     if (filtering && selectedTags.length > 0) {
       const query = selectedTags.map(tag => `tags=${encodeURIComponent(tag.name)}`).join("&");
-      fetch(`http://localhost:8000/notes/tags/?${query}`)
+      fetch(`http://localhost:8000/notes/tags/?${query}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
         .then((res) => res.json())
         .then(setNotes)
         .catch(() => console.error("Failed to fetch notes"));
     } else {
-      fetch("http://localhost:8000/notes/")
+      fetch("http://localhost:8000/notes/", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
         .then((res) => res.json())
         .then(setNotes)
         .catch(() => console.error("Failed to fetch notes"));
@@ -44,7 +52,12 @@ export default function MyNotes() {
   }, [selectedTags, filtering]);
 
   const deleteNote = async (id: number) => {
-    const res = await fetch(`http://localhost:8000/notes/${id}`, { method: 'DELETE' });
+    const res = await fetch(`http://localhost:8000/notes/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    });
     if (res.ok) {
       setNotes(notes.filter(note => note.id !== id));
     } else {

@@ -23,7 +23,11 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/tags/")
+    fetch("http://localhost:8000/tags/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then(response => response.json())
       .then(data => setAvailableTags(data))
       .catch(error => console.error("Error fetching tags:", error));
@@ -52,7 +56,10 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
 
     fetch("http://localhost:8000/tags/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ name: trimmedName, color: newTagColor }),
     })
       .then(async response => {
@@ -104,6 +111,9 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
                 try {
                   const response = await fetch(`http://localhost:8000/tags/${tag.id}`, {
                     method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
                   });
                   if (response.ok) {
                     setAvailableTags(prev => prev.filter(t => t.id !== tag.id));

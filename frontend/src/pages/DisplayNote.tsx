@@ -58,6 +58,7 @@ export default function DisplayNote() {
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [lastModified, setLastModified] = useState<string | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -66,7 +67,10 @@ export default function DisplayNote() {
     }
     const res = await fetch(`http://localhost:8000/notes/${note.id}/name`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ name: editedName, updated_at: new Date().toISOString() }),
     });
     if (res.ok) {
@@ -81,7 +85,11 @@ export default function DisplayNote() {
   useEffect(() => {
     console.log("Fetching note with id:", id);
 
-    fetch(`http://localhost:8000/notes/${id}`)
+    fetch(`http://localhost:8000/notes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then((res) => {
         console.log("Fetch response status:", res.status);
         if (!res.ok) throw new Error("Failed to fetch note");
@@ -95,7 +103,11 @@ export default function DisplayNote() {
         setLastModified(new Date(data.updated_at).toLocaleString());
         setLoading(false);
 
-        fetch(`http://localhost:8000/tags/${id}`)
+        fetch(`http://localhost:8000/tags/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        })
           .then((res) => res.json())
           .then((tagsData) => setTags(tagsData))
           .catch((err) => console.error("Error fetching tags:", err));
@@ -181,6 +193,9 @@ export default function DisplayNote() {
                   try {
                     const response = await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
                       method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                      }
                     });
                     if (response.ok) {
                       setTags(prev => prev.filter(t => t.id !== tag.id));
@@ -218,9 +233,16 @@ export default function DisplayNote() {
                 for (const tag of selectedTags) {
                   await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
                     method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
                   });
                 }
-                const tagsRes = await fetch(`http://localhost:8000/tags/${note.id}`);
+                const tagsRes = await fetch(`http://localhost:8000/tags/${note.id}`, {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                  }
+                });
                 if (tagsRes.ok) {
                   const updatedTags = await tagsRes.json();
                   setTags(updatedTags);
@@ -297,15 +319,24 @@ export default function DisplayNote() {
                     onClick={async () => {
                       const res = await fetch(`http://localhost:8000/notes/${note.id}`, {
                         method: "PUT",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
                         body: JSON.stringify({ content: editedContent, include_action_items: includeActionItems, updated_at: new Date().toISOString() }),
                       });
                       if (res.ok) {
                         const updated = await res.json();
                         setNote(updated);
                         setIsEditing(false);
+                        setUpdateError(null);
                       } else {
-                        alert("Failed to update note.");
+                        const errorData = await res.json();
+                        if (errorData.detail?.toLowerCase().includes("openai api key")) {
+                          setUpdateError("Your OpenAI API key appears to be invalid or missing. Please check your profile settings.");
+                        } else {
+                          setUpdateError(errorData.detail || "Failed to update note.");
+                        }
                       }
                     }}
                     className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition inline-flex items-center justify-center"
@@ -319,6 +350,11 @@ export default function DisplayNote() {
                     <XMarkIcon className="w-5 h-5" />
                   </button>
                 </div>
+                {updateError && (
+                  <div className="mt-4 w-full max-w-2xl bg-red-100 text-red-700 border border-red-400 rounded-md px-4 py-3">
+                    <strong className="font-semibold">Error:</strong> {updateError}
+                  </div>
+                )}
               </div>
             ) : (
               <>
