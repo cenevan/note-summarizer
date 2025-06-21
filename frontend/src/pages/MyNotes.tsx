@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import NoteCard from "../components/NoteCard";
 import TagSelector from "../components/TagSelector";
@@ -27,6 +27,19 @@ export default function MyNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [filtering, setFiltering] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (filtering && filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setFiltering(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filtering]);
 
   useEffect(() => {
     if (selectedTags.length > 0) {
@@ -73,25 +86,16 @@ export default function MyNotes() {
       </h1>
 
       <div className="w-full max-w-6xl mt-4 rounded-t-xl overflow-hidden">
-        <div className="relative self-start">
+        <div className="relative self-start" ref={filterRef}>
           <button
-            onClick={() => setFiltering(!filtering)}
+            onClick={(e) => { e.stopPropagation(); setFiltering(prev => !prev); }}
             className="px-4 py-1 bg-white/10 text-white font-semibold hover:bg-white/20 transition flex items-center gap-2 border-b border-white/20 rounded-t-lg"
           >
-            {filtering ? (
-              <>
-                <XMarkIcon className="w-5 h-5" />
-                Hide Filter
-              </>
-            ) : (
-              <>
-                <FunnelIcon className="w-5 h-5" />
-                Filter by Tags
-              </>
-            )}
+            <FunnelIcon className="w-5 h-5" />
+            Filter by Tags
           </button>
           <div
-            className={`absolute z-10 top-full left-0 w-1/3 bg-gray-700/90 border border-white/10 px-6 py-4 transition-opacity duration-300 rounded-b-lg ${
+            className={`absolute z-10 top-full left-0 w-1/3 bg-gray-700/90 backdrop-blur-md border border-white/10 px-6 py-4 transition-opacity duration-300 rounded-b-lg ${
               filtering ? "opacity-100 visible" : "opacity-0 invisible"
             }`}
           >
@@ -118,7 +122,7 @@ export default function MyNotes() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            <div className="relative z-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 auto-rows-fr">
               {notes.map((note) => (
                 <NoteCard
                   noteId={note.id}

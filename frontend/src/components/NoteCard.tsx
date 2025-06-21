@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { PencilSquareIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { PencilSquareIcon, TrashIcon, CheckIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import {
+  Menu,
+  Transition,
+  MenuButton,
+  MenuItems,
+  MenuItem
+} from "@headlessui/react";
+import TagSelector from "./TagSelector";
 
 interface Tag {
   id: number;
@@ -27,11 +35,46 @@ const NoteCard: React.FC<Props> = ({
   onDelete,
   expandLink,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
   const [isRenaming, setIsRenaming] = useState(false);
   const [editedName, setEditedName] = useState(name);
   const [tags, setTags] = useState<Tag[]>([]);
   const [lastModified, setLastModified] = useState<string | null>(null);
+  const [showTagSelector, setShowTagSelector] = useState(false);
+  const [showProperties, setShowProperties] = useState(false);
+  const [noteMetadata, setNoteMetadata] = useState<any | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
+        setShowProperties(false);
+        setShowTagSelector(false);
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/users/me", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setCurrentUser(data.username || null);
+      })
+      .catch(err => console.error("Failed to fetch user info", err));
+  }, []);
 
   useEffect(() => {
     console.log("NoteCard useEffect triggered");
@@ -61,6 +104,7 @@ const NoteCard: React.FC<Props> = ({
       .then(data => {
         if (data.updated_at) {
           setLastModified(new Date(data.updated_at).toLocaleString());
+          setNoteMetadata(data);
         }
       })
       .catch(err => console.error("Failed to fetch note metadata", err));
@@ -94,8 +138,8 @@ const NoteCard: React.FC<Props> = ({
     });
   };
 
-  return (
-    <div className="bg-gray-800 border border-gray-700 p-6 rounded-xl shadow-lg text-white font-sans transition-all duration-300 hover:shadow-xl h-full flex flex-col justify-between">
+  const cardContent = (
+    <div className="relative z-0 h-full bg-gray-800 border border-gray-700 p-6 rounded-xl shadow-lg text-white font-sans transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-[1.02] cursor-pointer flex flex-col justify-between">
       <div>
         <div className="flex flex-col items-center">
           {isRenaming ? (
@@ -107,7 +151,7 @@ const NoteCard: React.FC<Props> = ({
                 autoFocus
               />
               <button
-                onClick={() => changeName(editedName)}
+                onClick={(e) => { e.stopPropagation(); changeName(editedName); }}
                 className="text-sm px-3 py-1 rounded-md border border-green-400 text-green-400 hover:bg-green-800 transition"
                 title="Save Name"
               >
@@ -120,7 +164,7 @@ const NoteCard: React.FC<Props> = ({
                 {editedName}
               </h3>
               <button
-                onClick={() => setIsRenaming(true)}
+                onClick={(e) => { e.stopPropagation(); setIsRenaming(true); }}
                 className="text-sm text-accent hover:text-white"
                 title="Rename Note"
               >
@@ -174,30 +218,172 @@ const NoteCard: React.FC<Props> = ({
         )}
       </div>
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mt-4">
-        {expandLink ? (
-          <Link
-            to={expandLink}
-            className="text-sm px-3 py-1 rounded-md border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
-          >
-            + Expand
-          </Link>
-        ) : (
-          <button
-            className="text-sm px-3 py-1 rounded-md border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded ? "− Collapse" : "+ Expand"}
-          </button>
-        )}
-
         <button
-          onClick={() => onDelete(noteId)}
+          onClick={(e) => { e.stopPropagation(); onDelete(noteId); }}
           className="text-sm px-3 py-1 rounded-md border border-red-400 text-red-400 hover:bg-red-800 transition"
         >
           <TrashIcon className="w-4 h-4 inline mr-1" />
           <span>Delete</span>
         </button>
+        <div className="relative self-end">
+          <Menu as="div" className="relative inline-block text-left">
+            <MenuButton
+              onClick={(e) => { e.stopPropagation(); setShowMenu(prev => !prev); }}
+              className="text-white hover:text-gray-400"
+            >
+              <EllipsisVerticalIcon className="w-6 h-6" />
+            </MenuButton>
+            <Transition
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <MenuItems className="absolute right-0 top-full mt-2 w-48 origin-top-right bg-gray-900 border border-gray-700 divide-y divide-gray-600 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-[9999]">
+                <div className="px-1 py-1">
+                  <MenuItem
+                    as="button"
+                    onClick={(e) => { e.stopPropagation(); setShowTagSelector(prev => !prev); }}
+                    className="group flex rounded-md items-center w-full px-2 py-2 text-sm text-white z-[9999] hover:bg-gray-700"
+                  >
+                    Add Tag
+                  </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={(e) => { e.stopPropagation(); setShowProperties(prev => !prev); }}
+                    className="group flex rounded-md items-center w-full px-2 py-2 text-sm text-white z-[9999] hover:bg-gray-700"
+                  >
+                    Properties
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Transition>
+          </Menu>
+        </div>
       </div>
+    </div>
+  );
+
+  return expandLink ? (
+    <div
+      className={`relative h-full flex flex-col ${(showProperties || showTagSelector || showMenu) ? 'z-[10000]' : 'z-10'}`}
+      ref={cardRef}
+    >
+      <div
+        className="h-full flex flex-col"
+        onClick={() => {
+          setShowTagSelector(false);
+          setShowProperties(false);
+          navigate(expandLink);
+        }}
+      >
+        {cardContent}
+      </div>
+      {showProperties && noteMetadata && (
+        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-900/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
+          <div className="p-4 text-sm text-white">
+            <p><strong>Creator:</strong> {currentUser || "N/A"}</p>
+            <p><strong>Created At:</strong> {formatDateTime(noteMetadata.created_at)}</p>
+            <p><strong>Updated At:</strong> {formatDateTime(noteMetadata.updated_at)}</p>
+            <p><strong>Action Items Enabled:</strong> {noteMetadata.action_items?.trim() ? "Yes" : "No"}</p>
+          </div>
+        </div>
+      )}
+      {showTagSelector && (
+        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-700/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
+          <div className="p-4 text-white">
+            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await Promise.all(selectedTags.map(tag =>
+                      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                      })
+                    ));
+                    const updated = await fetch(`http://localhost:8000/tags/${noteId}`, {
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                      }
+                    });
+                    const updatedTags = await updated.json();
+                    setTags(updatedTags);
+                    setShowTagSelector(false);
+                  } catch (err) {
+                    console.error("Error assigning tags:", err);
+                  }
+                }}
+                className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div
+      className={`relative h-full flex flex-col ${(showProperties || showTagSelector || showMenu) ? 'z-[10000]' : 'z-10'}`}
+      ref={cardRef}
+    >
+      <div className="h-full flex flex-col">
+        {cardContent}
+      </div>
+      {showProperties && noteMetadata && (
+        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-900/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
+          <div className="p-4 text-sm text-white">
+            <p><strong>Creator:</strong> {currentUser || "N/A"}</p>
+            <p><strong>Created At:</strong> {formatDateTime(noteMetadata.created_at)}</p>
+            <p><strong>Updated At:</strong> {formatDateTime(noteMetadata.updated_at)}</p>
+            <p><strong>Action Items Enabled:</strong> {noteMetadata.action_items?.trim() ? "Yes" : "No"}</p>
+          </div>
+        </div>
+      )}
+      {showTagSelector && (
+        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-700/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
+          <div className="p-4 text-white">
+            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await Promise.all(selectedTags.map(tag =>
+                      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                      })
+                    ));
+                    const updated = await fetch(`http://localhost:8000/tags/${noteId}`, {
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                      }
+                    });
+                    const updatedTags = await updated.json();
+                    setTags(updatedTags);
+                    setShowTagSelector(false);
+                  } catch (err) {
+                    console.error("Error assigning tags:", err);
+                  }
+                }}
+                className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
