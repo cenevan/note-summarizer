@@ -195,6 +195,8 @@ def update_password(
 ):
     if not data.new_password:
         raise HTTPException(status_code=400, detail="New password cannot be empty")
+    if not auth.verify_password(data.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
     return crud.update_user_password(db, current_user.id, data.new_password)
 
 @app.put("/users/me/username")

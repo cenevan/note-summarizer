@@ -102,7 +102,8 @@ export default function Profile() {
       }
     } else if (field === "password") {
       url = "http://localhost:8000/users/me/password";
-      body = { new_password: formData.newPassword };
+      body = { old_password: formData.currentPassword,
+        new_password: formData.newPassword };
       if (!formData.currentPassword) {
         setFeedback(prev => ({ ...prev, password: "Current password is required." }));
         return;
@@ -152,6 +153,7 @@ export default function Profile() {
         setEditing(prev => ({ ...prev, [field]: false }));
         const message = field === "password" ? "Password updated successfully." : successMsg;
         setFeedback(prev => ({ ...prev, [field]: message }));
+        console.log("Feedback set for", field, ":", message);
         setTimeout(() => {
           setFeedback(prev => ({ ...prev, [field]: "" }));
         }, 3000);
@@ -166,6 +168,26 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+      {feedback.username === "Updated successfully." && (
+        <div className="mb-6 px-4 py-3 rounded-md bg-green-100 text-green-800 border border-green-300 text-center font-medium shadow-sm">
+          Username updated successfully.
+        </div>
+      )}
+      {feedback.email === "Updated successfully." && (
+        <div className="mb-6 px-4 py-3 rounded-md bg-green-100 text-green-800 border border-green-300 text-center font-medium shadow-sm">
+          Email updated successfully.
+        </div>
+      )}
+      {feedback.apiKey === "Updated successfully." && (
+        <div className="mb-6 px-4 py-3 rounded-md bg-green-100 text-green-800 border border-green-300 text-center font-medium shadow-sm">
+          API Key updated successfully.
+        </div>
+      )}
+      {feedback.password === "Password updated successfully." && (
+        <div className="mb-6 px-4 py-3 rounded-md bg-green-100 text-green-800 border border-green-300 text-center font-medium shadow-sm">
+          Password updated successfully.
+        </div>
+      )}
       <div className="max-w-2xl mx-auto bg-white shadow-xl rounded-2xl p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">Account Profile</h1>
         <div className="space-y-6">
@@ -186,35 +208,44 @@ export default function Profile() {
                   </button>
                 )}
               </label>
-              {editing.username ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => handleChange("username", e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={() => updateField("username")}
-                    className="text-green-600 hover:text-green-800"
-                    aria-label="Save username"
-                    type="button"
-                  >
-                    <CheckIcon className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() => handleEditToggle("username")}
-                    className="text-red-600 hover:text-red-800"
-                    aria-label="Cancel editing username"
-                    type="button"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
+            {editing.username ? (
+                <div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => handleChange("username", e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => updateField("username")}
+                      className="text-green-600 hover:text-green-800"
+                      aria-label="Save username"
+                      type="button"
+                    >
+                      <CheckIcon className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={() => handleEditToggle("username")}
+                      className="text-red-600 hover:text-red-800"
+                      aria-label="Cancel editing username"
+                      type="button"
+                    >
+                      <XMarkIcon className="w-6 h-6" />
+                    </button>
+                  </div>
+                  {feedback.username && feedback.username !== "Updated successfully." && (
+                    <p className="mt-1 text-sm text-red-600">{feedback.username}</p>
+                  )}
                 </div>
               ) : (
-                <div className="mt-1 text-lg text-gray-800">{user.username}</div>
+                <>
+                  <div className="mt-1 text-lg text-gray-800">{user.username}</div>
+                  {feedback.username && feedback.username !== "Updated successfully." && (
+                    <p className="mt-1 text-sm text-red-600">{feedback.username}</p>
+                  )}
+                </>
               )}
-              {feedback.username && <p className="mt-1 text-sm text-red-600">{feedback.username}</p>}
             </div>
 
             {/* Email */}
@@ -233,35 +264,44 @@ export default function Profile() {
                   </button>
                 )}
               </label>
-              {editing.email ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={() => updateField("email")}
-                    className="text-green-600 hover:text-green-800"
-                    aria-label="Save email"
-                    type="button"
-                  >
-                    <CheckIcon className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() => handleEditToggle("email")}
-                    className="text-red-600 hover:text-red-800"
-                    aria-label="Cancel editing email"
-                    type="button"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
+            {editing.email ? (
+                <div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => updateField("email")}
+                      className="text-green-600 hover:text-green-800"
+                      aria-label="Save email"
+                      type="button"
+                    >
+                      <CheckIcon className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={() => handleEditToggle("email")}
+                      className="text-red-600 hover:text-red-800"
+                      aria-label="Cancel editing email"
+                      type="button"
+                    >
+                      <XMarkIcon className="w-6 h-6" />
+                    </button>
+                  </div>
+                  {feedback.email && feedback.email !== "Updated successfully." && (
+                    <p className="mt-1 text-sm text-red-600">{feedback.email}</p>
+                  )}
                 </div>
               ) : (
-                <div className="mt-1 text-lg text-gray-800">{user.email}</div>
+                <>
+                  <div className="mt-1 text-lg text-gray-800">{user.email}</div>
+                  {feedback.email && feedback.email !== "Updated successfully." && (
+                    <p className="mt-1 text-sm text-red-600">{feedback.email}</p>
+                  )}
+                </>
               )}
-              {feedback.email && <p className="mt-1 text-sm text-red-600">{feedback.email}</p>}
             </div>
           </div>
 
@@ -282,74 +322,83 @@ export default function Profile() {
               )}
             </label>
             {editing.password ? (
-              <div className="space-y-3">
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="currentPassword">
-                    Current Password
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      id="currentPassword"
-                      type={showCurrentPassword ? "text" : "password"}
-                      value={formData.currentPassword}
-                      onChange={(e) => handleChange("currentPassword", e.target.value)}
-                      className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
-                      type="button"
-                    >
-                      {showCurrentPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                    </button>
+              <div>
+                <div className="space-y-3">
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="currentPassword">
+                      Current Password
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        id="currentPassword"
+                        type={showCurrentPassword ? "text" : "password"}
+                        value={formData.currentPassword}
+                        onChange={(e) => handleChange("currentPassword", e.target.value)}
+                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                        type="button"
+                      >
+                        {showCurrentPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="newPassword">
+                      New Password
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        id="newPassword"
+                        type={showNewPassword ? "text" : "password"}
+                        value={formData.newPassword}
+                        onChange={(e) => handleChange("newPassword", e.target.value)}
+                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                        type="button"
+                      >
+                        {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="ml-auto flex gap-2">
+                      <button
+                        onClick={() => updateField("password")}
+                        className="text-green-600 hover:text-green-800"
+                        aria-label="Save password"
+                        type="button"
+                      >
+                        <CheckIcon className="w-6 h-6" />
+                      </button>
+                      <button
+                        onClick={() => handleEditToggle("password")}
+                        className="text-red-600 hover:text-red-800"
+                        aria-label="Cancel editing password"
+                        type="button"
+                      >
+                        <XMarkIcon className="w-6 h-6" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1" htmlFor="newPassword">
-                    New Password
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      id="newPassword"
-                      type={showNewPassword ? "text" : "password"}
-                      value={formData.newPassword}
-                      onChange={(e) => handleChange("newPassword", e.target.value)}
-                      className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
-                      type="button"
-                    >
-                      {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="ml-auto flex gap-2">
-                    <button
-                      onClick={() => updateField("password")}
-                      className="text-green-600 hover:text-green-800"
-                      aria-label="Save password"
-                      type="button"
-                    >
-                      <CheckIcon className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={() => handleEditToggle("password")}
-                      className="text-red-600 hover:text-red-800"
-                      aria-label="Cancel editing password"
-                      type="button"
-                    >
-                      <XMarkIcon className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-                {feedback.password && <p className="text-sm text-red-600">{feedback.password}</p>}
+                {feedback.password && feedback.password !== "Password updated successfully." && (
+                  <p className="mt-1 text-sm text-red-600">{feedback.password}</p>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <span className="text-gray-800 text-lg">********</span>
+                <span className="text-gray-800 text-lg">
+                  {"*".repeat(formData.currentPassword.length || 8)}
+                </span>
+                {feedback.password && feedback.password !== "Password updated successfully." && (
+                  <p className="mt-1 text-sm text-red-600">{feedback.password}</p>
+                )}
               </div>
             )}
           </div>
@@ -371,74 +420,83 @@ export default function Profile() {
               )}
             </label>
             {editing.apiKey ? (
-              <div className="flex items-center gap-3">
-                <input
-                  type={showApiKey ? "text" : "password"}
-                  value={formData.apiKey}
-                  onChange={(e) => handleChange("apiKey", e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 break-all focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
-                  type="button"
-                >
-                  {showApiKey ? (
-                    <>
-                      <EyeSlashIcon className="w-4 h-4" />
-                      Hide
-                    </>
-                  ) : (
-                    <>
-                      <EyeIcon className="w-4 h-4" />
-                      Reveal
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => updateField("apiKey")}
-                  className="text-green-600 hover:text-green-800"
-                  aria-label="Save API key"
-                  type="button"
-                >
-                  <CheckIcon className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={() => handleEditToggle("apiKey")}
-                  className="text-red-600 hover:text-red-800"
-                  aria-label="Cancel editing API key"
-                  type="button"
-                >
-                  <XMarkIcon className="w-6 h-6" />
-                </button>
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type={showApiKey ? "text" : "password"}
+                    value={formData.apiKey}
+                    onChange={(e) => handleChange("apiKey", e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 break-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                    type="button"
+                  >
+                    {showApiKey ? (
+                      <>
+                        <EyeSlashIcon className="w-4 h-4" />
+                        Hide
+                      </>
+                    ) : (
+                      <>
+                        <EyeIcon className="w-4 h-4" />
+                        Reveal
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => updateField("apiKey")}
+                    className="text-green-600 hover:text-green-800"
+                    aria-label="Save API key"
+                    type="button"
+                  >
+                    <CheckIcon className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={() => handleEditToggle("apiKey")}
+                    className="text-red-600 hover:text-red-800"
+                    aria-label="Cancel editing API key"
+                    type="button"
+                  >
+                    <XMarkIcon className="w-6 h-6" />
+                  </button>
+                </div>
+                {feedback.apiKey && feedback.apiKey !== "Updated successfully." && (
+                  <p className="mt-1 text-sm text-red-600">{feedback.apiKey}</p>
+                )}
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <span className="text-gray-800 text-lg break-all">
-                  {showApiKey
-                    ? user.openai_api_key || "No key provided"
-                    : "*".repeat(user.openai_api_key?.length || 10)}
-                </span>
-                <button
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
-                  type="button"
-                >
-                  {showApiKey ? (
-                    <>
-                      <EyeSlashIcon className="w-4 h-4" />
-                      Hide
-                    </>
-                  ) : (
-                    <>
-                      <EyeIcon className="w-4 h-4" />
-                      Reveal
-                    </>
-                  )}
-                </button>
-              </div>
+              <>
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-800 text-lg break-all">
+                    {showApiKey
+                      ? user.openai_api_key || "No key provided"
+                      : "*".repeat(user.openai_api_key?.length || 10)}
+                  </span>
+                  <button
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                    type="button"
+                  >
+                    {showApiKey ? (
+                      <>
+                        <EyeSlashIcon className="w-4 h-4" />
+                        Hide
+                      </>
+                    ) : (
+                      <>
+                        <EyeIcon className="w-4 h-4" />
+                        Reveal
+                      </>
+                    )}
+                  </button>
+                </div>
+                {feedback.apiKey && feedback.apiKey !== "Updated successfully." && (
+                  <p className="mt-1 text-sm text-red-600">{feedback.apiKey}</p>
+                )}
+              </>
             )}
-            {feedback.apiKey && <p className="mt-1 text-sm text-red-600">{feedback.apiKey}</p>}
           </div>
         </div>
       </div>

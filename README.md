@@ -33,21 +33,7 @@ git clone https://github.com/cenevan/note-summarizer.git
 cd note-summarizer
 ```
 
-### 2. Add OpenAI API Key
-
-Copy the example environment file and set your OpenAI key:
-
-```bash
-cp backend/.env.example backend/.env
-```
-
-Then open `backend/.env` in a text editor and replace the placeholder with your actual API key:
-
-```
-OPENAI_API_KEY=your_real_key_here
-```
-
-### 3. Start the App
+### 2. Start the App
 
 Build and run all services:
 
@@ -80,9 +66,6 @@ Before using manual setup, ensure the following tools are installed:
 
 > Windows users can install `make` using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) or Git Bash.
 
-### Add OpenAI API Key
-
-Follow step 2 from above.
 
 ### Backend Setup
 

@@ -69,6 +69,7 @@ class UpdateEmail(BaseModel):
     new_email: str
 
 class UpdatePassword(BaseModel):
+    old_password: str
     new_password: str
 
 class UpdateAPIKey(BaseModel):

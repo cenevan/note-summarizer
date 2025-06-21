@@ -29,7 +29,7 @@ export default function MyNotes() {
   const [filtering, setFiltering] = useState(false);
 
   useEffect(() => {
-    if (filtering && selectedTags.length > 0) {
+    if (selectedTags.length > 0) {
       const query = selectedTags.map(tag => `tags=${encodeURIComponent(tag.name)}`).join("&");
       fetch(`http://localhost:8000/notes/tags/?${query}`, {
         headers: {
@@ -49,7 +49,7 @@ export default function MyNotes() {
         .then(setNotes)
         .catch(() => console.error("Failed to fetch notes"));
     }
-  }, [selectedTags, filtering]);
+  }, [selectedTags]);
 
   const deleteNote = async (id: number) => {
     const res = await fetch(`http://localhost:8000/notes/${id}`, {
@@ -72,63 +72,68 @@ export default function MyNotes() {
         My Notes
       </h1>
 
-      <div>
-        <button
-          onClick={() => setFiltering(!filtering)}
-          className="px-6 py-2 rounded-full bg-primary text-white font-semibold hover:bg-blue-600 transition flex items-center gap-2"
-        >
-          {filtering ? (
-            <>
-              <XMarkIcon className="w-5 h-5" />
-              Hide Filter
-            </>
-          ) : (
-            <>
-              <FunnelIcon className="w-5 h-5" />
-              Filter by Tags
-            </>
-          )}
-        </button>
-      </div>
-
-      {filtering && (
-        <div className="w-full max-w-3xl border border-gray-400 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-md mt-4">
-          <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
-        </div>
-      )}
-
-      {notes.length === 0 ? (
-        <div className="mt-12 bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-xl shadow-md max-w-xl text-center">
-          <div className="text-6xl mb-4">
-            <DocumentIcon className="w-12 h-12 text-white/70 mx-auto" />
-          </div>
-          <h2 className="text-2xl font-semibold text-white mb-2">No Notes Yet</h2>
-          <p className="text-gray-300 mb-4">
-            It looks like you haven’t uploaded any notes. Let’s get started!
-          </p>
-          <Link
-            to="/upload"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-white hover:bg-blue-600 transition font-medium text-lg"
+      <div className="w-full max-w-6xl mt-4 rounded-t-xl overflow-hidden">
+        <div className="relative self-start">
+          <button
+            onClick={() => setFiltering(!filtering)}
+            className="px-4 py-1 bg-white/10 text-white font-semibold hover:bg-white/20 transition flex items-center gap-2 border-b border-white/20 rounded-t-lg"
           >
-            <PlusCircleIcon className="w-5 h-5" />
-            Upload Your First Note
-          </Link>
+            {filtering ? (
+              <>
+                <XMarkIcon className="w-5 h-5" />
+                Hide Filter
+              </>
+            ) : (
+              <>
+                <FunnelIcon className="w-5 h-5" />
+                Filter by Tags
+              </>
+            )}
+          </button>
+          <div
+            className={`absolute z-10 top-full left-0 w-1/3 bg-gray-700/90 border border-white/10 px-6 py-4 transition-opacity duration-300 rounded-b-lg ${
+              filtering ? "opacity-100 visible" : "opacity-0 invisible"
+            }`}
+          >
+            <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
-          {notes.map((note) => (
-            <NoteCard
-              noteId={note.id}
-              name={note.name}
-              summary={note.summary}
-              actionItems={note.action_items}
-              onDelete={deleteNote}
-              key={note.id}
-              expandLink={`/notes/${note.id}`}
-            />
-          ))}
+
+        <div className="bg-white/5 rounded-none border border-white/20 shadow-md min-h-[calc(100vh-14rem)]">
+          {notes.length === 0 ? (
+            <div className="p-8 text-center flex flex-col justify-center items-center h-[66vh]">
+              <div className="text-6xl mb-4">
+                <DocumentIcon className="w-12 h-12 text-white/70 mx-auto" />
+              </div>
+              <h2 className="text-2xl font-semibold text-white mb-2">No Notes Yet</h2>
+              <p className="text-gray-300 mb-4">
+                It looks like you haven’t uploaded any notes. Let’s get started!
+              </p>
+              <Link
+                to="/upload"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-white hover:bg-blue-600 transition font-medium text-lg"
+              >
+                <PlusCircleIcon className="w-5 h-5" />
+                Upload Your First Note
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+              {notes.map((note) => (
+                <NoteCard
+                  noteId={note.id}
+                  name={note.name}
+                  summary={note.summary}
+                  actionItems={note.action_items}
+                  onDelete={deleteNote}
+                  key={note.id}
+                  expandLink={`/notes/${note.id}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
