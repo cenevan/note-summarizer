@@ -62,6 +62,17 @@ def get_note(
         return {"error": "Note not found"}
     return note
 
+@app.get("/notes/search/", response_model=list[schemas.Note])
+def search_notes(
+    query: str,
+    db: Session = Depends(get_db),
+    current_user: schemas.UserOut = Depends(auth.get_current_user)
+):
+    if not query:
+        raise HTTPException(status_code=400, detail="Search query cannot be empty")
+    notes = crud.search_notes(db, query, current_user.id)
+    return notes
+
 @app.put("/notes/{note_id}", response_model=schemas.Note)
 def update_note(
     note_id: int,

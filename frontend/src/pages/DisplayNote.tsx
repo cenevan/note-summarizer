@@ -121,7 +121,7 @@ export default function DisplayNote() {
 
   if (loading) {
     console.log("Loading note...");
-    return <div className="text-center text-accent mt-10">Loading...</div>;
+    return <div className="text-center text-[#001f3f] mt-10">Loading...</div>;
   }
 
   if (error) {
@@ -131,31 +131,32 @@ export default function DisplayNote() {
 
   if (!note) {
     console.warn("Note not found or is null after loading");
-    return <div className="text-center text-accent mt-10">Note not found.</div>;
+    return <div className="text-center text-[#001f3f] mt-10">Note not found.</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-secondary to-gray-800 text-white p-8 font-sans flex flex-col items-center space-y-10">
-      <div className="w-full max-w-4xl mb-4">
-        <Link
-          to="/notes"
-          className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full border border-blue-400 text-blue-400 hover:bg-blue-800 transition"
-        >
-          <ChevronLeftIcon className="w-4 h-4" />
-          Back to My Notes
-        </Link>
-      </div>
+    <main className="bg-[#f8f9fa] text-[#001f3f] min-h-screen py-8">
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-8">
+        <div>
+          <Link
+            to="/notes"
+            className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full border border-blue-400 text-blue-400 hover:bg-blue-600 transition"
+          >
+            <ChevronLeftIcon className="w-4 h-4" />
+            Back to My Notes
+          </Link>
+        </div>
       {isRenaming ? (
         <div className="flex justify-center items-center gap-2 mb-6">
           <input
-            className="text-4xl font-bold text-primary bg-transparent border-b border-primary focus:outline-none text-center"
+            className="text-4xl font-bold text-[#001f3f] bg-white border-b border-gray-300 focus:outline-none text-center"
             value={editedName}
             onChange={(e) => setEditedName(e.target.value)}
             autoFocus
           />
           <button
             onClick={() => changeName(editedName)}
-            className="text-sm px-3 py-1 rounded-md border border-green-400 text-green-400 hover:bg-green-800 transition"
+            className="text-sm px-3 py-1 rounded-md border border-green-400 text-green-700 bg-white hover:bg-green-100 transition"
             title="Save Name"
           >
             <CheckIcon className="w-5 h-5" />
@@ -163,13 +164,13 @@ export default function DisplayNote() {
         </div>
       ) : (
         <div className="flex justify-center items-center gap-2 mb-6">
-          <h1 className="text-4xl font-bold text-primary">{note.name}</h1>
+          <h1 className="text-4xl font-bold text-[#001f3f]">{note.name}</h1>
           <button
             onClick={() => setIsRenaming(true)}
-            className="text-sm text-accent hover:text-white"
+            className="text-sm text-[#001f3f] hover:text-blue-800"
             title="Rename Note"
           >
-            <PencilSquareIcon className="w-5 h-5 text-accent hover:text-white" />
+            <PencilSquareIcon className="w-5 h-5 text-[#001f3f] hover:text-blue-800" />
           </button>
         </div>
       )}
@@ -178,7 +179,7 @@ export default function DisplayNote() {
         {tags.map(tag => (
           <span
             key={tag.id}
-            className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 text-white bg-gray-800"
+            className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 bg-gray-200 text-[#001f3f]"
           >
             <span
               className="w-3 h-3 rounded-full"
@@ -215,7 +216,7 @@ export default function DisplayNote() {
         ))}
         <button
           onClick={() => setShowTagSelector(!showTagSelector)}
-          className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border-2 border-dashed border-blue-400 text-blue-400 hover:bg-blue-800"
+          className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border-2 border-dashed border-blue-400 text-blue-400 hover:bg-blue-600"
           title="Add Tags"
         >
           <TagIcon className="w-4 h-4 text-blue-400" />
@@ -224,7 +225,7 @@ export default function DisplayNote() {
       </div>
 
       {showTagSelector && (
-        <div className="mb-6 border border-gray-400 bg-gray-800 p-4 rounded">
+        <div className="mb-6 border border-gray-200 bg-white p-4 rounded shadow">
           <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
           <button
             className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md"
@@ -261,23 +262,23 @@ export default function DisplayNote() {
       )}
 
       <div className="w-full max-w-4xl space-y-8">
-        <section className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-semibold text-primary mb-2">
-            <DocumentTextIcon className="w-6 h-6 inline-block mr-2 text-primary" />
+        <section className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold text-[#001f3f] mb-2">
+            <DocumentTextIcon className="w-6 h-6 inline-block mr-2 text-[#001f3f]" />
             Summary
           </h2>
-          <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+          <div className="p-4 bg-gray-100 rounded-md border border-gray-200 text-gray-700 whitespace-pre-wrap">
             {note.summary}
           </div>
         </section>
 
         {note.action_items && (
-          <section className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold text-primary mb-2">
-              <ClipboardDocumentListIcon className="w-6 h-6 inline-block mr-2 text-primary" />
+          <section className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold text-[#001f3f] mb-2">
+              <ClipboardDocumentListIcon className="w-6 h-6 inline-block mr-2 text-[#001f3f]" />
               Action Items
             </h2>
-            <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+            <div className="p-4 bg-gray-100 rounded-md border border-gray-200 text-gray-700 whitespace-pre-wrap">
               <ul className="list-disc list-inside space-y-1">
                 {note.action_items.split("\n").map((item, idx) => (
                   <li key={idx}>{item}</li>
@@ -287,14 +288,14 @@ export default function DisplayNote() {
           </section>
         )}
 
-        <section className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow-lg">
+        <section className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-primary mb-2">
-              <ChatBubbleLeftRightIcon className="w-6 h-6 inline-block mr-2 text-primary" />
+            <h2 className="text-2xl font-semibold text-[#001f3f] mb-2">
+              <ChatBubbleLeftRightIcon className="w-6 h-6 inline-block mr-2 text-[#001f3f]" />
               Original Content
             </h2>
             <button
-              className="text-xl text-primary hover:text-white transition"
+              className="text-xl text-[#001f3f] hover:text-blue-800 transition"
               onClick={() => setShowOriginal(!showOriginal)}
               title="Toggle Original Text"
             >
@@ -307,7 +308,7 @@ export default function DisplayNote() {
                 <textarea
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}
-                  className="w-full p-4 text-white rounded-md bg-gray-800 border border-gray-600 resize-y"
+                  className="w-full p-4 text-[#001f3f] rounded-md bg-white border border-gray-300 resize-y"
                   rows={10}
                 />
                 <ActionItemsToggle
@@ -358,7 +359,7 @@ export default function DisplayNote() {
               </div>
             ) : (
               <>
-                <div className="p-4 bg-gray-800 rounded-md border border-gray-600 text-gray-300 whitespace-pre-wrap">
+                <div className="p-4 bg-gray-100 rounded-md border border-gray-200 text-gray-700 whitespace-pre-wrap">
                   {note.content}
                 </div>
                 <button
@@ -376,11 +377,12 @@ export default function DisplayNote() {
         </section>
       </div>
       {(createdAt || lastModified) && (
-        <div className="text-sm text-gray-400 mt-2 text-center">
+        <div className="text-sm text-gray-600 mt-2 text-center">
           {createdAt && <p>Created At: {createdAt}</p>}
           {lastModified && <p>Last Modified: {lastModified}</p>}
         </div>
       )}
-    </div>
+      </div>
+    </main>
   );
 }

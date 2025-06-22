@@ -28,6 +28,19 @@ def get_notes(db: Session, tags: list[str] | None, user_id: int) -> list[models.
         query = query.join(models.Note.tags).filter(models.Tag.name.in_(tags)).distinct()
     return query.all()
 
+def search_notes(db: Session, query: str, user_id: int) -> list[models.Note]:
+    if not query:
+        return db.query(models.Note).filter(models.Note.user_id == user_id).all()
+    
+    return (
+        db.query(models.Note)
+        .filter(
+            models.Note.user_id == user_id,
+            (models.Note.name.ilike(f"%{query}%") | models.Note.content.ilike(f"%{query}%"))
+        )
+        .all()
+    )
+
 def delete_note(db: Session, note_id: int, user_id: int) -> None:
     note = db.query(models.Note).filter(models.Note.id == note_id, models.Note.user_id == user_id).first()
     if note:

@@ -11,7 +11,7 @@ const ActionItemsToggle: React.FC<ActionItemToggleProps> = ({
 }) => {
   return (
     <div className="mb-4 flex items-center space-x-3">
-      <label htmlFor="include-action-items" className="text-sm text-gray-300">
+      <label htmlFor="include-action-items" className="text-sm text-gray-700">
         Generate action items
       </label>
       <button

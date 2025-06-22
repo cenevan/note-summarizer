@@ -46,6 +46,14 @@ const NoteCard: React.FC<Props> = ({
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [flipPopup, setFlipPopup] = useState<boolean>(false);
+  useEffect(() => {
+    if ((showTagSelector || showProperties) && cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      const popupWidth = 384; // matches w-96
+      setFlipPopup(window.innerWidth - rect.right < popupWidth);
+    }
+  }, [showTagSelector, showProperties]);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -139,7 +147,7 @@ const NoteCard: React.FC<Props> = ({
   };
 
   const cardContent = (
-    <div className="relative z-0 h-full bg-gray-800 border border-gray-700 p-6 rounded-xl shadow-lg text-white font-sans transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-[1.02] cursor-pointer flex flex-col justify-between">
+    <div className="relative z-0 h-full bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-md text-[#001f3f] font-sans transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer flex flex-col justify-between">
       <div>
         <div className="flex flex-col items-center">
           {isRenaming ? (
@@ -168,7 +176,7 @@ const NoteCard: React.FC<Props> = ({
                 className="text-sm text-accent hover:text-white"
                 title="Rename Note"
               >
-                <PencilSquareIcon className="w-5 h-5 text-accent hover:text-white" />
+                <PencilSquareIcon className="w-5 h-5 text-accent hover:text-gray-500" />
               </button>
             </div>
           )}
@@ -178,7 +186,7 @@ const NoteCard: React.FC<Props> = ({
             {tags.map(tag => (
               <span
                 key={tag.id}
-                className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border border-gray-600 bg-gray-700 text-white"
+                className="pl-3 pr-2 py-1 rounded-full text-sm inline-flex items-center gap-1 border border-gray-200 bg-gray-200 text-gray-600"
               >
                 <span
                   className="w-3 h-3 rounded-full"
@@ -220,7 +228,7 @@ const NoteCard: React.FC<Props> = ({
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mt-4">
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(noteId); }}
-          className="text-sm px-3 py-1 rounded-md border border-red-400 text-red-400 hover:bg-red-800 transition"
+          className="text-sm px-3 py-1 rounded-md border border-red-400 text-red-400 hover:bg-red-600 transition"
         >
           <TrashIcon className="w-4 h-4 inline mr-1" />
           <span>Delete</span>
@@ -229,7 +237,7 @@ const NoteCard: React.FC<Props> = ({
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton
               onClick={(e) => { e.stopPropagation(); setShowMenu(prev => !prev); }}
-              className="text-white hover:text-gray-400"
+              className="text-gray-700 hover:text-gray-500"
             >
               <EllipsisVerticalIcon className="w-6 h-6" />
             </MenuButton>
@@ -282,8 +290,8 @@ const NoteCard: React.FC<Props> = ({
         {cardContent}
       </div>
       {showProperties && noteMetadata && (
-        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-900/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
-          <div className="p-4 text-sm text-white">
+        <div className={`absolute top-0 ${flipPopup ? 'right-full mr-2' : 'left-full ml-2'} w-96 bg-white border border-gray-200 rounded-lg shadow-md z-[9999]`}>
+          <div className="p-4 text-sm text-[#001f3f]">
             <p><strong>Creator:</strong> {currentUser || "N/A"}</p>
             <p><strong>Created At:</strong> {formatDateTime(noteMetadata.created_at)}</p>
             <p><strong>Updated At:</strong> {formatDateTime(noteMetadata.updated_at)}</p>
@@ -292,8 +300,8 @@ const NoteCard: React.FC<Props> = ({
         </div>
       )}
       {showTagSelector && (
-        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-700/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
-          <div className="p-4 text-white">
+        <div className={`absolute top-0 ${flipPopup ? 'right-full mr-2' : 'left-full ml-2'} w-96 bg-white border border-gray-200 rounded-lg shadow-md z-[9999]`}>
+          <div className="p-4 text-[#001f3f]">
             <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
             <div className="flex justify-center mt-2">
               <button
@@ -338,8 +346,8 @@ const NoteCard: React.FC<Props> = ({
         {cardContent}
       </div>
       {showProperties && noteMetadata && (
-        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-900/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
-          <div className="p-4 text-sm text-white">
+        <div className={`absolute top-0 ${flipPopup ? 'right-full mr-2' : 'left-full ml-2'} w-96 bg-white border border-gray-200 rounded-lg shadow-md z-[9999]`}>
+          <div className="p-4 text-sm text-[#001f3f]">
             <p><strong>Creator:</strong> {currentUser || "N/A"}</p>
             <p><strong>Created At:</strong> {formatDateTime(noteMetadata.created_at)}</p>
             <p><strong>Updated At:</strong> {formatDateTime(noteMetadata.updated_at)}</p>
@@ -348,8 +356,8 @@ const NoteCard: React.FC<Props> = ({
         </div>
       )}
       {showTagSelector && (
-        <div className="absolute bottom-0 left-full ml-2 w-96 bg-gray-700/75 backdrop-blur-md border border-gray-600 rounded-lg shadow-lg z-[9999]">
-          <div className="p-4 text-white">
+        <div className={`absolute top-0 ${flipPopup ? 'right-full mr-2' : 'left-full ml-2'} w-96 bg-white border border-gray-200 rounded-lg shadow-md z-[9999]`}>
+          <div className="p-4 text-[#001f3f]">
             <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
             <div className="flex justify-center mt-2">
               <button
