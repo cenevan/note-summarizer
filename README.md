@@ -33,7 +33,13 @@ git clone https://github.com/cenevan/note-summarizer.git
 cd note-summarizer
 ```
 
-### 2. Start the App
+### 2. Copy .env file
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+### 3. Start the App
 
 Build and run all services:
 
@@ -66,6 +72,9 @@ Before using manual setup, ensure the following tools are installed:
 
 > Windows users can install `make` using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) or Git Bash.
 
+### Copy .env file
+
+Follow step 2 from above.
 
 ### Backend Setup
 

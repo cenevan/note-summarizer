@@ -10,10 +10,9 @@ import {
 const Dashboard: React.FC = () => {
   return (
     <>
-      <main className="bg-[#f8f9fa] text-[#001f3f] py-8">
+      <main className="bg-[#f8f9fa] text-[#001f3f] py-8 min-h-screen">
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
             <div className="space-y-8 lg:col-span-2">
               {/* Recently Modified Notes */}
               <div className="bg-white p-6 rounded-lg shadow">
@@ -46,7 +45,6 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            {/* Right Column */}
             <div className="space-y-8">
               {/* Most Frequent Keywords */}
               <div className="bg-white p-6 rounded-lg shadow">
