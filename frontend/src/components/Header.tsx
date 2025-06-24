@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -50,33 +51,76 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="bg-gray-900/80 backdrop-blur-md text-white py-3 px-6 shadow-md border-b border-gray-800">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-[#001f3f] to-[#004080] text-white py-4 px-8 shadow-xl">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
-        <Link to="/" className="text-xl font-semibold tracking-wide text-white hover:text-primary transition-colors duration-300">
-          🧠 Note AI
-        </Link>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Link to="/" className="text-2xl font-bold tracking-tight text-white">
+            🧠 <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-blue-400">Note AI</span>
+          </Link>
+        </motion.div>
         <nav className="flex gap-2">
           {isLoggedIn ? (
             <>
-              <Link to="/upload" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
-                <ArrowUpTrayIcon className="w-5 h-5 mr-1" />
-                Upload
+              <Link to="/upload" className="relative px-4 py-2 text-lg font-medium text-white flex items-center overflow-hidden">
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="z-10 flex items-center"
+                >
+                  <ArrowUpTrayIcon className="w-5 h-5 mr-2" />Upload
+                </motion.div>
+                <motion.span
+                  className="absolute left-0 bottom-0 h-0.5 bg-white"
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                />
               </Link>
-              <Link to="/notes" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
-                <DocumentTextIcon className="w-5 h-5 mr-1" />
-                My Notes
+              <Link to="/notes" className="relative px-4 py-2 text-lg font-medium text-white flex items-center overflow-hidden">
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="z-10 flex items-center"
+                >
+                  <DocumentTextIcon className="w-5 h-5 mr-2" />My Notes
+                </motion.div>
+                <motion.span
+                  className="absolute left-0 bottom-0 h-0.5 bg-white"
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                />
               </Link>
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
+                  className="relative px-4 py-2 text-lg font-medium text-white flex items-center gap-2 overflow-hidden"
                 >
-                  <UserCircleIcon className="w-6 h-6" />
-                  {username}
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="z-10 flex items-center gap-2"
+                  >
+                    <UserCircleIcon className="w-6 h-6" />
+                    {username}
+                  </motion.div>
+                  <motion.span
+                    className="absolute left-0 bottom-0 h-0.5 bg-white"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </button>
                 {dropdownOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-44 bg-white text-black rounded-lg shadow-lg z-50 transform transition-transform duration-200 ease-out origin-top scale-100 opacity-100"
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-44 bg-white text-black rounded-lg shadow-lg z-50"
                   >
                     <button
                       onClick={() => navigate("/profile")}
@@ -95,19 +139,43 @@ const Header: React.FC = () => {
                       <ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2 inline" />
                       Logout
                     </button>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </>
           ) : (
             <>
-              <Link to="/login" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
-                <ArrowRightOnRectangleIcon className="w-5 h-5 mr-1" />
-                Login
+              <Link to="/login" className="relative px-4 py-2 text-lg font-medium text-white flex items-center overflow-hidden">
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="z-10 flex items-center"
+                >
+                  <ArrowRightOnRectangleIcon className="w-5 h-5 mr-2" />
+                  Login
+                </motion.div>
+                <motion.span
+                  className="absolute left-0 bottom-0 h-0.5 bg-white"
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                />
               </Link>
-              <Link to="/signup" className="px-4 py-2 text-xl font-semibold border border-white/30 text-white hover:border-white hover:bg-gray-800 rounded transition-colors flex items-center">
-                <UserCircleIcon className="w-5 h-5 mr-1" />
-                Sign Up
+              <Link to="/signup" className="relative px-4 py-2 text-lg font-medium text-white flex items-center overflow-hidden">
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="z-10 flex items-center"
+                >
+                  <UserCircleIcon className="w-5 h-5 mr-2" />
+                  Sign Up
+                </motion.div>
+                <motion.span
+                  className="absolute left-0 bottom-0 h-0.5 bg-white"
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.3 }}
+                />
               </Link>
             </>
           )}

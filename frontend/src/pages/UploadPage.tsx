@@ -13,6 +13,7 @@ import {
   SparklesIcon,
   ClockIcon
 } from "@heroicons/react/24/outline";
+import { DocumentIcon } from "@heroicons/react/24/outline";
 
 interface Result {
   id: number;
@@ -129,12 +130,18 @@ export default function UploadPage() {
             }}
             className="flex flex-col items-center justify-center p-12 h-64 border-2 border-dashed border-gray-300 rounded-md hover:border-gray-500 transition cursor-pointer w-full text-center"
           >
-            <ArrowUpTrayIcon className="w-5 h-5" />
-            Select a Note File
+            {file ? (
+              <>
+                <DocumentIcon className="w-12 h-12 text-[#001f3f]" />
+                <span className="mt-2 text-lg text-gray-800 font-medium">{file.name}</span>
+              </>
+            ) : (
+              <>
+                <ArrowUpTrayIcon className="w-5 h-5 text-gray-600" />
+                <span className="mt-2 text-gray-700">Select a Note File</span>
+              </>
+            )}
           </label>
-          {file && !result && (
-            <p className="mt-4 text-gray-700 text-center">Selected file: {file.name}</p>
-          )}
           <input
             id="file-upload"
             type="file"

@@ -16,6 +16,8 @@ interface Note {
   content: string;
   summary: string;
   action_items: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Tag {
@@ -28,9 +30,16 @@ export default function MyNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [createdOn, setCreatedOn] = useState<string>("");
+  const [modifiedOn, setModifiedOn] = useState<string>("");
   const [filtering, setFiltering] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [actionFilter, setActionFilter] = useState<"all" | "with" | "without">("all");
+
+  const [createdOpen, setCreatedOpen] = useState<boolean>(false);
+  const [modifiedOpen, setModifiedOpen] = useState<boolean>(false);
+  const [actionOpen, setActionOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
@@ -40,7 +49,26 @@ export default function MyNotes() {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
-        .then(setNotes)
+        .then((allNotes: Note[]) => {
+          let filtered = allNotes;
+          if (createdOn) {
+            filtered = filtered.filter(n =>
+              n.created_at.slice(0, 10) === createdOn
+            );
+          }
+          if (modifiedOn) {
+            filtered = filtered.filter(n =>
+              n.updated_at.slice(0, 10) === modifiedOn
+            );
+          }
+          // Filter by action items presence
+          if (actionFilter === "with") {
+            filtered = filtered.filter(n => n.action_items.trim().length > 0);
+          } else if (actionFilter === "without") {
+            filtered = filtered.filter(n => n.action_items.trim().length === 0);
+          }
+          setNotes(filtered);
+        })
         .catch(() => console.error("Failed to search notes"));
     } else if (selectedTags.length > 0) {
       const query = selectedTags.map(tag => `tags=${encodeURIComponent(tag.name)}`).join("&");
@@ -48,17 +76,55 @@ export default function MyNotes() {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
-        .then(setNotes)
+        .then((allNotes: Note[]) => {
+          let filtered = allNotes;
+          if (createdOn) {
+            filtered = filtered.filter(n =>
+              n.created_at.slice(0, 10) === createdOn
+            );
+          }
+          if (modifiedOn) {
+            filtered = filtered.filter(n =>
+              n.updated_at.slice(0, 10) === modifiedOn
+            );
+          }
+          // Filter by action items presence
+          if (actionFilter === "with") {
+            filtered = filtered.filter(n => n.action_items.trim().length > 0);
+          } else if (actionFilter === "without") {
+            filtered = filtered.filter(n => n.action_items.trim().length === 0);
+          }
+          setNotes(filtered);
+        })
         .catch(() => console.error("Failed to fetch tagged notes"));
     } else {
       fetch("http://localhost:8000/notes/", {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
-        .then(setNotes)
+        .then((allNotes: Note[]) => {
+          let filtered = allNotes;
+          if (createdOn) {
+            filtered = filtered.filter(n =>
+              n.created_at.slice(0, 10) === createdOn
+            );
+          }
+          if (modifiedOn) {
+            filtered = filtered.filter(n =>
+              n.updated_at.slice(0, 10) === modifiedOn
+            );
+          }
+          // Filter by action items presence
+          if (actionFilter === "with") {
+            filtered = filtered.filter(n => n.action_items.trim().length > 0);
+          } else if (actionFilter === "without") {
+            filtered = filtered.filter(n => n.action_items.trim().length === 0);
+          }
+          setNotes(filtered);
+        })
         .catch(() => console.error("Failed to fetch notes"));
     }
-  }, [searchQuery, selectedTags]);
+  }, [searchQuery, selectedTags, createdOn, modifiedOn, actionFilter]);
 
   const deleteNote = async (id: number) => {
     const res = await fetch(`http://localhost:8000/notes/${id}`, {
@@ -108,7 +174,7 @@ export default function MyNotes() {
         {/* Left Navigation Pane */}
         {sidebarOpen && (
           <aside className="w-64 bg-white border-r h-screen p-4">
-            <h3 className="text-sm font-medium text-gray-500 uppercase mb-2">Filters</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Filters</h3>
             <div ref={filterRef} className="relative">
               <button
                 onClick={() => setFiltering(prev => !prev)}
@@ -121,6 +187,72 @@ export default function MyNotes() {
                 className={`absolute top-full left-0 w-96 bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-3 z-50 ${filtering ? "block" : "hidden"}`}
               >
                 <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+              </div>
+            </div>
+            {/* Created On Dropdown */}
+            <div className="relative mt-6">
+              <button
+                onClick={() => setCreatedOpen(prev => !prev)}
+                className="w-full text-left px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200 flex justify-between items-center"
+              >
+                Created On
+                <ChevronDownIcon className={`w-5 h-5 text-gray-600 transition-transform ${createdOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div className={`absolute top-full left-0 w-full bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-3 z-50 ${createdOpen ? "block" : "hidden"}`}>
+                <input
+                  type="date"
+                  value={createdOn}
+                  onChange={e => setCreatedOn(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#001f3f]"
+                />
+              </div>
+            </div>
+            {/* Last Modified Dropdown */}
+            <div className="relative mt-6">
+              <button
+                onClick={() => setModifiedOpen(prev => !prev)}
+                className="w-full text-left px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200 flex justify-between items-center"
+              >
+                Last Modified
+                <ChevronDownIcon className={`w-5 h-5 text-gray-600 transition-transform ${modifiedOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div className={`absolute top-full left-0 w-full bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-3 z-50 ${modifiedOpen ? "block" : "hidden"}`}>
+                <input
+                  type="date"
+                  value={modifiedOn}
+                  onChange={e => setModifiedOn(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#001f3f]"
+                />
+              </div>
+            </div>
+            {/* Action Items Dropdown */}
+            <div className="relative mt-6">
+              <button
+                onClick={() => setActionOpen(prev => !prev)}
+                className="w-full text-left px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200 flex justify-between items-center"
+              >
+                {actionFilter === "all" ? "All Notes" : actionFilter === "with" ? "With Action Items" : "Without Action Items"}
+                <ChevronDownIcon className={`w-5 h-5 text-gray-600 transition-transform ${actionOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div className={`absolute top-full left-0 w-full bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-2 z-50 ${actionOpen ? "block" : "hidden"}`}>
+                <button
+                  onClick={() => { setActionFilter("all"); setActionOpen(false); }}
+                  className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
+                >
+                  All Notes
+                </button>
+                <button
+                  onClick={() => { setActionFilter("with"); setActionOpen(false); }}
+                  className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
+                >
+                  With Action Items
+                </button>
+                <button
+                  onClick={() => { setActionFilter("without"); setActionOpen(false); }}
+                  className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
+                >
+                  Without Action Items
+                </button>
               </div>
             </div>
           </aside>

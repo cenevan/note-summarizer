@@ -12,6 +12,7 @@ import SignupPage from "./pages/SignUpPage.tsx";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage.tsx";
 import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./context/ProtectedRoute.tsx";
 
 function App() {
   const { isLoggedIn, isAuthInitialized } = useAuth();
@@ -25,76 +26,62 @@ function App() {
             isAuthInitialized
               ? !isLoggedIn
                 ? <LandingPage />
-                : <Navigate to="/notes" />
+                : <Navigate to="/dashboard" />
               : null
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            isAuthInitialized && isLoggedIn ? (
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/dashboard"
+            element={
               <>
                 <Header />
                 <Dashboard />
                 <Footer />
               </>
-            ) : (
-              isAuthInitialized && <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/upload"
-          element={
-            isAuthInitialized && isLoggedIn ? (
+            }
+          />
+          <Route
+            path="/upload"
+            element={
               <>
                 <Header />
                 <UploadPage />
                 <Footer />
               </>
-            ) : (
-              isAuthInitialized && <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/notes"
-          element={
-            isAuthInitialized && isLoggedIn ? (
+            }
+          />
+          <Route
+            path="/notes"
+            element={
               <>
                 <Header />
                 <MyNotes />
                 <Footer />
               </>
-            ) : (
-              isAuthInitialized && <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/notes/:id"
-          element={
-            <>
-              <Header />
-              <DisplayNote />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            isAuthInitialized && isLoggedIn ? (
+            }
+          />
+          <Route
+            path="/notes/:id"
+            element={
+              <>
+                <Header />
+                <DisplayNote />
+                <Footer />
+              </>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
               <>
                 <Header />
                 <Profile />
                 <Footer />
               </>
-            ) : (
-              isAuthInitialized && <Navigate to="/login" />
-            )
-          }
-        />
+            }
+          />
+        </Route>
         <Route
           path="/login"
           element={
