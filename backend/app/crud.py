@@ -212,3 +212,26 @@ def update_user_email(db: Session, user_id: int, new_email: str):
     user.email = new_email
     db.commit()
     return {"msg": "Email updated successfully"}
+
+def get_api_usage(db: Session, user_id: int) -> list[models.ApiUsage]:
+    return db.query(models.ApiUsage).filter(models.ApiUsage.user_id == user_id).all()
+
+def create_api_usage(
+    db: Session,
+    user_id: int,
+    note_id: int | None = None,
+    usage_date: str = "",
+    input_tokens: int = 0,
+    output_tokens: int = 0
+) -> models.ApiUsage:
+    api_usage = models.ApiUsage(
+        user_id=user_id,
+        note_id=note_id,
+        usage_date=usage_date,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens
+    )
+    db.add(api_usage)
+    db.commit()
+    db.refresh(api_usage)
+    return api_usage

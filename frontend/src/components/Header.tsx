@@ -18,6 +18,9 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [hideHeader, setHideHeader] = useState(false);
+  const lastScrollY = useRef<number>(0);
+
   useEffect(() => {
     const fetchUser = async () => {
       if (!isLoggedIn) return;
@@ -50,8 +53,27 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > lastScrollY.current) {
+        setHideHeader(true);
+      } else {
+        setHideHeader(false);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-[#001f3f] to-[#004080] text-white py-4 px-8 shadow-xl">
+    <motion.header
+      initial={{ y: 0, opacity: 1 }}
+      animate={hideHeader ? { y: -100, opacity: 0 } : { y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="sticky top-0 z-50 bg-gradient-to-r from-[#001f3f] to-[#004080] text-white py-4 px-8 shadow-xl"
+    >
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <motion.div
           whileHover={{ scale: 1.1 }}
@@ -181,7 +203,7 @@ const Header: React.FC = () => {
           )}
         </nav>
       </div>
-    </header>
+    </motion.header>
   );
 }
 

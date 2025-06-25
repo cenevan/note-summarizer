@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 
 
-def summarize_text(text: str, user_openai_api_key: str, include_action_items: bool = True) -> tuple[str, str]:
+def summarize_text(text: str, user_openai_api_key: str, include_action_items: bool = True) -> tuple[str, str, int, int]:
     if not user_openai_api_key or not user_openai_api_key.strip():
         raise ValueError("No OpenAI API key found. Please add your key in your profile settings.")
     client = OpenAI(api_key=user_openai_api_key)
@@ -40,6 +40,10 @@ def summarize_text(text: str, user_openai_api_key: str, include_action_items: bo
                 ],
                 temperature=0.7,
             )
+        # Capture token usage
+        usage = response.usage
+        prompt_tokens = usage.prompt_tokens
+        completion_tokens = usage.completion_tokens
     except Exception as e:
         raise ValueError("Invalid or missing OpenAI API key.") from e
     
@@ -59,4 +63,4 @@ def summarize_text(text: str, user_openai_api_key: str, include_action_items: bo
     else:
         summary = content.strip()
 
-    return summary, action_items
+    return summary, action_items, prompt_tokens, completion_tokens

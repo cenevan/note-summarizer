@@ -32,6 +32,7 @@ class Note(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="notes")
     tags = relationship("Tag", secondary=note_tags, back_populates="notes")
+    api_usage = relationship("ApiUsage", back_populates="note")
 
 class User(Base):
     __tablename__ = "users"
@@ -43,3 +44,16 @@ class User(Base):
     openai_api_key = Column(String, nullable=True)  # Optional at signup
     notes = relationship("Note", back_populates="user")
     tags = relationship("Tag", back_populates="user")
+    api_usage = relationship("ApiUsage", back_populates="user")
+
+class ApiUsage(Base):
+    __tablename__ = "api_usage"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    note_id = Column(Integer, ForeignKey("notes.id"), nullable=False)
+    user = relationship("User", back_populates="api_usage")
+    note = relationship("Note", back_populates="api_usage")
+    usage_date = Column(String, index=True)
+    input_tokens = Column(Integer, default=0)
+    output_tokens = Column(Integer, default=0)

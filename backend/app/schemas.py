@@ -74,3 +74,20 @@ class UpdatePassword(BaseModel):
 
 class UpdateAPIKey(BaseModel):
     new_key: str
+
+class ApiUsageBase(BaseModel):
+    usage_date: str
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+class ApiUsageCreate(ApiUsageBase):
+    user_id: int
+    note_id: Optional[int] = None
+
+class ApiUsage(ApiUsageBase):
+    id: int
+    user_id: int
+    note_id: Optional[int] = None
+
+    class Config:
+        orm_mode = True

@@ -28,10 +28,17 @@ async def upload_note(
 ):
     content = (await file.read()).decode("utf-8")
     try:
-        summary, action_items = summarize_text(content, current_user.openai_api_key, include_action_items)
+        summary, action_items, input_tokens, output_tokens = summarize_text(content, current_user.openai_api_key, include_action_items)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     db_note = crud.create_note(db, title, content, summary, action_items, created_at, tags, current_user.id)
+    if not db_note:
+        raise HTTPException(status_code=400, detail="Failed to create note")
+    api_usage = crud.create_api_usage(
+        db, current_user.id, db_note.id, created_at, input_tokens, output_tokens
+    )
+    if not api_usage:
+        raise HTTPException(status_code=400, detail="Failed to log API usage")
     return db_note
 
 @app.get("/notes/", response_model=list[schemas.Note])
@@ -81,12 +88,17 @@ def update_note(
     current_user: schemas.UserOut = Depends(auth.get_current_user)
 ):
     try:
-        summary, action_items = summarize_text(request.content, current_user.openai_api_key, request.include_action_items)
+        summary, action_items, input_tokens, output_tokens = summarize_text(request.content, current_user.openai_api_key, request.include_action_items)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     updated_note = crud.update_note(db, note_id, None, request.content, summary, request.updated_at, action_items, current_user.id)
     if not updated_note:
         return {"error": "Note not found"}
+    api_usage = crud.create_api_usage(
+        db, current_user.id, updated_note.id, request.updated_at, input_tokens, output_tokens
+    )
+    if not api_usage:
+        raise HTTPException(status_code=400, detail="Failed to log API usage")
     return updated_note
 
 @app.put("/notes/{note_id}/name", response_model=schemas.Note)
@@ -229,6 +241,14 @@ def update_email(
     if not data.new_email:
         raise HTTPException(status_code=400, detail="New email cannot be empty")
     return crud.update_user_email(db, current_user.id, data.new_email)
+
+@app.get("/users/me/usage")
+def get_api_usage(
+    db: Session = Depends(get_db),
+    current_user: schemas.UserOut = Depends(auth.get_current_user)
+):
+    usage = crud.get_api_usage(db, current_user.id)
+    return usage
 
 @app.get("/users/me")
 def get_current_user_info(current_user: schemas.UserOut = Depends(auth.get_current_user)):
