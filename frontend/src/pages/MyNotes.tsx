@@ -53,12 +53,24 @@ export default function MyNotes() {
           let filtered = allNotes;
           if (createdOn) {
             filtered = filtered.filter(n =>
-              n.created_at.slice(0, 10) === createdOn
+              (() => {
+                const d = new Date(n.created_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === createdOn;
+              })()
             );
           }
           if (modifiedOn) {
             filtered = filtered.filter(n =>
-              n.updated_at.slice(0, 10) === modifiedOn
+              (() => {
+                const d = new Date(n.updated_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === modifiedOn;
+              })()
             );
           }
           // Filter by action items presence
@@ -80,12 +92,24 @@ export default function MyNotes() {
           let filtered = allNotes;
           if (createdOn) {
             filtered = filtered.filter(n =>
-              n.created_at.slice(0, 10) === createdOn
+              (() => {
+                const d = new Date(n.created_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === createdOn;
+              })()
             );
           }
           if (modifiedOn) {
             filtered = filtered.filter(n =>
-              n.updated_at.slice(0, 10) === modifiedOn
+              (() => {
+                const d = new Date(n.updated_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === modifiedOn;
+              })()
             );
           }
           // Filter by action items presence
@@ -106,12 +130,24 @@ export default function MyNotes() {
           let filtered = allNotes;
           if (createdOn) {
             filtered = filtered.filter(n =>
-              n.created_at.slice(0, 10) === createdOn
+              (() => {
+                const d = new Date(n.created_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === createdOn;
+              })()
             );
           }
           if (modifiedOn) {
             filtered = filtered.filter(n =>
-              n.updated_at.slice(0, 10) === modifiedOn
+              (() => {
+                const d = new Date(n.updated_at);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}` === modifiedOn;
+              })()
             );
           }
           // Filter by action items presence

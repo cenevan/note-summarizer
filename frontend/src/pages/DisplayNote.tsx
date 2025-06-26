@@ -15,6 +15,7 @@ import {
   ChatBubbleLeftRightIcon,
   PlusIcon,
   MinusIcon,
+  CurrencyDollarIcon
 } from "@heroicons/react/24/outline";
 
 interface Note {
@@ -59,6 +60,8 @@ export default function DisplayNote() {
   const [lastModified, setLastModified] = useState<string | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [inputTokens, setInputTokens] = useState(0);
+  const [outputTokens, setOutputTokens] = useState(0);
 
   const changeName = async (editedName: string) => {
     if (!note) {
@@ -118,6 +121,30 @@ export default function DisplayNote() {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    fetch(`http://localhost:8000/users/me/usage`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch usage data");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Fetched usage data:", data);
+
+        data = data.filter((item: any) => item.note_id === parseInt(id!));
+
+        const inputSum = data.reduce((acc: number, item: any) => acc + (item.input_tokens || 0), 0);
+        const outputSum = data.reduce((acc: number, item: any) => acc + (item.output_tokens || 0), 0);
+        setInputTokens(inputSum);
+        setOutputTokens(outputSum);
+      })
+      .catch((err) => console.error("Error fetching usage data:", err)
+    )
+  })
 
   if (loading) {
     console.log("Loading note...");
@@ -382,6 +409,18 @@ export default function DisplayNote() {
           {lastModified && <p>Last Modified: {lastModified}</p>}
         </div>
       )}
+      </div>
+      <div className="mt-8 text-center text-gray-500 text-sm">
+        <p className="mb-2">
+          <CurrencyDollarIcon className="w-5 h-5 inline-block mr-1" />
+          Accumulated API Usage Statistics
+        </p>
+        <p>
+          Input Tokens: <span className="text-gray-800">{inputTokens}</span>
+        </p>
+        <p>
+          Output Tokens: <span className="text-gray-800">{outputTokens}</span>
+        </p>
       </div>
     </main>
   );

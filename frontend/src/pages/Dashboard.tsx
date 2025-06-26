@@ -345,49 +345,6 @@ const Dashboard: React.FC = () => {
                 ))}
               </motion.div>
             </motion.div>
-            {/* Chart Panels Side by Side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]"
-              >
-                <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
-                  <CalendarIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
-                  Queries Over Time
-                </h2>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={uploadActivityData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="count" stroke="#001f3f" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]"
-              >
-                <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
-                  <CurrencyDollarIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
-                  Token Usage Over Time
-                </h2>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={tokenUsageData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="input" stackId="a" fill="#001f3f" />
-                    <Bar dataKey="output" stackId="a" fill="#004080" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </motion.div>
-            </div>
           </section>
 
           <aside className="space-y-6">
@@ -446,6 +403,49 @@ const Dashboard: React.FC = () => {
               </div>
             </motion.div>
           </aside>
+        </div>
+        {/* Full-Width Charts */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
+            transition={{ duration: 0.3 }}
+            className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]"
+          >
+            <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
+              <CalendarIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
+              Queries Over Time
+            </h2>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={uploadActivityData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="count" stroke="#001f3f" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
+            transition={{ duration: 0.3 }}
+            className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]"
+          >
+            <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
+              <CurrencyDollarIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
+              Token Usage Over Time
+            </h2>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={tokenUsageData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="input" stackId="a" fill="#001f3f" />
+                <Bar dataKey="output" stackId="a" fill="#004080" />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
         </div>
       </motion.main>
     </>

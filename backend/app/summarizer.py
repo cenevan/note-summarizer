@@ -15,7 +15,7 @@ def summarize_text(text: str, user_openai_api_key: str, include_action_items: bo
                         "role": "system",
                         "content": (
                             "Summarize this note clearly and concisely. "
-                            "Then, extract a list of action items. "
+                            "Then, extract a list of action items and follow the response format strictly. "
                             "Format the response as:\n\n"
                             "Summary:\n<summary here>\n\n"
                             "Action Items:\n- item 1\n- item 2\n- item 3"

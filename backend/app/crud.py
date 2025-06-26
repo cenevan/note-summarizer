@@ -216,6 +216,13 @@ def update_user_email(db: Session, user_id: int, new_email: str):
 def get_api_usage(db: Session, user_id: int) -> list[models.ApiUsage]:
     return db.query(models.ApiUsage).filter(models.ApiUsage.user_id == user_id).all()
 
+def get_api_usage_by_note_id(db: Session, user_id: int, note_id: int) -> list[models.ApiUsage] | None:
+    return (
+        db.query(models.ApiUsage)
+        .filter(models.ApiUsage.user_id == user_id, models.ApiUsage.note_id == note_id)
+        .all()
+    )
+
 def create_api_usage(
     db: Session,
     user_id: int,
