@@ -11,7 +11,8 @@ import {
   InboxArrowDownIcon,
   LightBulbIcon,
   SparklesIcon,
-  ClockIcon
+  ClockIcon,
+  PhotoIcon
 } from "@heroicons/react/24/outline";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 
@@ -145,7 +146,7 @@ export default function UploadPage() {
           <input
             id="file-upload"
             type="file"
-            accept=".txt"
+            accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.md,.rtf,.html,.htm,image/*"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="hidden"
           />
@@ -242,30 +243,30 @@ export default function UploadPage() {
           </div>
         )}
 
-        {/* Future Enhancements Section */}
-        <section className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full mt-14">
-            <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg text-center">
-              <h2 className="text-xl font-semibold mb-2 flex items-center">
-                <ClockIcon className="w-5 h-5 inline mr-1 text-primary" />
-                Upload History
-              </h2>
-              <p className="text-sm text-gray-600">Track notes you’ve previously uploaded and summarized.</p>
-            </div>
-            <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg text-center">
-              <h2 className="text-xl font-semibold mb-2 flex items-center">
-                <LightBulbIcon className="w-5 h-5 inline mr-1 text-primary" />
-                Tagging System
-              </h2>
-              <p className="text-sm text-gray-600">Organize notes with custom tags for easy retrieval.</p>
-            </div>
-            <div className="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg text-center">
-              <h2 className="text-xl font-semibold mb-2 flex items-center">
-                <SparklesIcon className="w-5 h-5 inline mr-1 text-primary" />
-                Coming Soon: Drafting Workspace
-              </h2>
-              <p className="text-sm text-gray-600">Use context-aware AI to write and improve notes directly in the app.</p>
-            </div>
+        {/* Supported File Types */}
+        <section className="mt-12 w-full">
+          <h2 className="text-2xl font-extrabold text-center text-[#001f3f] mb-6">
+            Supported File Types
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            {[
+              { label: 'PDF', icon: <DocumentArrowUpIcon className="w-8 h-8" /> },
+              { label: 'Word (DOCX)', icon: <DocumentIcon className="w-8 h-8" /> },
+              { label: 'PowerPoint (PPTX)', icon: <SparklesIcon className="w-8 h-8" /> },
+              { label: 'Text (TXT)', icon: <InboxArrowDownIcon className="w-8 h-8" /> },
+              { label: 'Markdown (MD)', icon: <LightBulbIcon className="w-8 h-8" /> },
+              { label: 'HTML', icon: <ClockIcon className="w-8 h-8" /> },
+              { label: 'RTF', icon: <PencilSquareIcon className="w-8 h-8" /> },
+              { label: 'Images (JPG, PNG)', icon: <PhotoIcon className="w-8 h-8" /> },
+            ].map(({ label, icon }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-default"
+              >
+                <div className="text-[#001f3f] mb-2">{icon}</div>
+                <span className="mt-1 text-base font-medium text-gray-800">{label}</span>
+              </div>
+            ))}
           </div>
         </section>
       </div>

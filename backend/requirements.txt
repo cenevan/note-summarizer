@@ -9,3 +9,7 @@ python-multipart
 passlib[bcrypt]
 bcrypt<4.1
 python-jose[cryptography]
+tika
+python-magic
+pytesseract>=0.3.10
+Pillow>=9.0.0

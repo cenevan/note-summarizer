@@ -309,7 +309,7 @@ export default function Profile() {
           <div className="border-t pt-6">
             <label className="block text-sm font-semibold text-gray-500 uppercase mb-1 flex items-center gap-2">
               <LockClosedIcon className="w-4 h-4" />
-              Password
+              Change Password
               {!editing.password && (
                 <button
                   onClick={() => handleEditToggle("password")}
@@ -392,10 +392,7 @@ export default function Profile() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <span className="text-gray-800 text-lg">
-                  {"*".repeat(formData.currentPassword.length || 8)}
-                </span>
+              <div>
                 {feedback.password && feedback.password !== "Password updated successfully." && (
                   <p className="mt-1 text-sm text-red-600">{feedback.password}</p>
                 )}
@@ -470,27 +467,29 @@ export default function Profile() {
               <>
                 <div className="flex items-center gap-3">
                   <span className="text-gray-800 text-lg break-all">
-                    {showApiKey
-                      ? user.openai_api_key || "No key provided"
-                      : "*".repeat(user.openai_api_key?.length || 10)}
+                    {user.openai_api_key
+                      ? (showApiKey ? user.openai_api_key : "*".repeat(user.openai_api_key.length))
+                      : "No Key Provided"}
                   </span>
-                  <button
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
-                    type="button"
-                  >
-                    {showApiKey ? (
-                      <>
-                        <EyeSlashIcon className="w-4 h-4" />
-                        Hide
-                      </>
-                    ) : (
-                      <>
-                        <EyeIcon className="w-4 h-4" />
-                        Reveal
-                      </>
-                    )}
-                  </button>
+                  {user.openai_api_key && (
+                    <button
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium transition flex items-center gap-1"
+                      type="button"
+                    >
+                      {showApiKey ? (
+                        <>
+                          <EyeSlashIcon className="w-4 h-4" />
+                          Hide
+                        </>
+                      ) : (
+                        <>
+                          <EyeIcon className="w-4 h-4" />
+                          Reveal
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 {feedback.apiKey && feedback.apiKey !== "Updated successfully." && (
                   <p className="mt-1 text-sm text-red-600">{feedback.apiKey}</p>

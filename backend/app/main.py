@@ -3,11 +3,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, get_db
 from app.summarizer import summarize_text
+from app.parse import save_upload, detect_mime, extract_with_tika
 from app import crud, schemas, auth
 from sqlalchemy.orm import Session
 from typing import Optional
 from sqlalchemy.exc import IntegrityError
 import io
+import os
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -26,19 +28,32 @@ async def upload_note(
     db: Session = Depends(get_db),
     current_user: schemas.UserOut = Depends(auth.get_current_user)
 ):
-    content = (await file.read()).decode("utf-8")
+    path = save_upload(file)
+    mime = detect_mime(path)
+    try:
+        content = extract_with_tika(path)
+    except Exception as e:
+        os.remove(path)
+        raise HTTPException(status_code=400, detail=f"Failed to parse {mime}: {e}")
+    if not content.strip():
+        os.remove(path)
+        raise HTTPException(status_code=415, detail="Failed to parse text from file")
     try:
         summary, action_items, input_tokens, output_tokens = summarize_text(content, current_user.openai_api_key, include_action_items)
     except ValueError as e:
+        os.remove(path)
         raise HTTPException(status_code=400, detail=str(e))
     db_note = crud.create_note(db, title, content, summary, action_items, created_at, tags, current_user.id)
     if not db_note:
+        os.remove(path)
         raise HTTPException(status_code=400, detail="Failed to create note")
     api_usage = crud.create_api_usage(
         db, current_user.id, db_note.id, created_at, input_tokens, output_tokens
     )
     if not api_usage:
+        os.remove(path)
         raise HTTPException(status_code=400, detail="Failed to log API usage")
+    os.remove(path)
     return db_note
 
 @app.get("/notes/", response_model=list[schemas.Note])

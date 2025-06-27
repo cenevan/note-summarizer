@@ -155,6 +155,7 @@ const Header: React.FC = () => {
                       onClick={() => {
                         localStorage.removeItem("token");
                         setIsLoggedIn(false);
+                        navigate("/login");
                       }}
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg flex items-center"
                     >

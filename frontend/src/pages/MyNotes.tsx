@@ -206,10 +206,10 @@ export default function MyNotes() {
         </Link>
       </header>
 
-      <div className="flex">
+      <div className="flex h-screen overflow-visible">
         {/* Left Navigation Pane */}
         {sidebarOpen && (
-          <aside className="w-64 bg-white border-r h-screen p-4">
+          <aside className="w-64 bg-white border-r h-full sticky top-0 p-4 overflow-visible relative z-10">
             <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Filters</h3>
             <div ref={filterRef} className="relative">
               <button
@@ -220,7 +220,7 @@ export default function MyNotes() {
                 <ChevronDownIcon className={`w-5 h-5 text-gray-600 transition-transform ${filtering ? "rotate-180" : ""}`} />
               </button>
               <div
-                className={`absolute top-full left-0 w-96 bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-3 z-50 ${filtering ? "block" : "hidden"}`}
+                className={`absolute top-full left-0 w-96 bg-white shadow-lg border border-gray-200 mt-1 rounded-md p-3 overflow-visible z-[10000] ${filtering ? "block" : "hidden"}`}
               >
                 <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
               </div>
@@ -295,7 +295,7 @@ export default function MyNotes() {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-auto relative z-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {notes.length === 0 ? (
               <div className="col-span-full text-center text-gray-600">

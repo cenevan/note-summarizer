@@ -61,7 +61,7 @@ const fetchAiResults = async (weekItems: string, apiKey: string) => {
   const { text: itemsText } = await generateText({
     model: provider("gpt-4o-mini"),
     system:
-      "Consolidate the following list of action items into a concise bullet list without numbering, keeping the most important items and limiting to 10 bullet points. Each item should start with a bullet point (•) and be no longer than 25 words.",
+      "Consolidate the following list of action items into a concise bullet list without numbering, keeping the most critical action items and limiting to 10 bullet points. Each item should start with a bullet point (•) and be no longer than 25 words.",
     prompt: weekItems
   });
   // extract keywords
@@ -362,7 +362,7 @@ const Dashboard: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-medium text-[#001f3f] mb-2 flex items-center">
                     <CheckCircleIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
-                    Generated Action Items
+                    Critical Action Items
                   </h3>
                   <div className="min-h-[4rem] flex items-center justify-center">
                     {loadingActionItems ? (

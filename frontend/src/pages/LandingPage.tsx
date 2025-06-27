@@ -59,9 +59,6 @@ const LandingPage: React.FC = () => (
               <ArrowUpTrayIcon className="w-10 h-10 text-[#00d8d8] mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2 flex items-center justify-center">
                 Multi-Modal Support
-                <span className="ml-2 inline-block bg-[#00d8d8] bg-opacity-20 text-[#001f3f] text-xs font-semibold px-2 py-1 rounded-full">
-                  Coming Soon
-                </span>
               </h3>
               <p className="text-gray-600">
                 Upload PDFs, images, and more for comprehensive note-taking.
