@@ -112,6 +112,36 @@ export default function UploadPage() {
     }
   };
 
+  // Helper function to get icon based on file type
+  const getIconForFileType = (filename: string) => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'pdf':
+        return <DocumentArrowUpIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'doc':
+      case 'docx':
+        return <DocumentIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'ppt':
+      case 'pptx':
+        return <SparklesIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'txt':
+        return <InboxArrowDownIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'md':
+        return <LightBulbIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'html':
+      case 'htm':
+        return <ClockIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'rtf':
+        return <PencilSquareIcon className="w-12 h-12 text-[#001f3f]" />;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return <PhotoIcon className="w-12 h-12 text-[#001f3f]" />;
+      default:
+        return <DocumentIcon className="w-12 h-12 text-[#001f3f]" />;
+    }
+  };
+
   return (
     <main className="bg-[#f8f9fa] text-[#001f3f] min-h-screen py-8">
       <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-8 flex flex-col items-center">
@@ -133,7 +163,7 @@ export default function UploadPage() {
           >
             {file ? (
               <>
-                <DocumentIcon className="w-12 h-12 text-[#001f3f]" />
+                {getIconForFileType(file.name)}
                 <span className="mt-2 text-lg text-gray-800 font-medium">{file.name}</span>
               </>
             ) : (
@@ -151,27 +181,28 @@ export default function UploadPage() {
             className="hidden"
           />
 
-          <ActionItemToggle
-            includeActionItems={includeActionItems}
-            setIncludeActionItems={setIncludeActionItems}
-          />
-
-          <button
-            onClick={handleUpload}
-            disabled={!file || loading}
-            className={`px-6 py-2 rounded-full text-white transition font-semibold flex items-center justify-center gap-2 ${
-              loading || !file
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#001f3f] hover:bg-gray-800"
-            }`}
-          >
-            {loading ? "Summarizing..." : (
-              <>
-                <InboxArrowDownIcon className="w-5 h-5" />
-                Upload & Summarize
-              </>
-            )}
-          </button>
+          <div className="flex flex-col items-center justify-center space-y-4 w-full">
+            <ActionItemToggle
+              includeActionItems={includeActionItems}
+              setIncludeActionItems={setIncludeActionItems}
+            />
+            <button
+              onClick={handleUpload}
+              disabled={!file || loading}
+              className={`px-6 py-2 rounded-full text-white transition font-semibold flex items-center justify-center gap-2 ${
+                loading || !file
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#001f3f] hover:bg-gray-800"
+              }`}
+            >
+              {loading ? "Summarizing..." : (
+                <>
+                  <InboxArrowDownIcon className="w-5 h-5" />
+                  Upload & Summarize
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {error && (
