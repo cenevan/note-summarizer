@@ -36,6 +36,8 @@ export default function MyNotes() {
   const filterRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const [actionFilter, setActionFilter] = useState<"all" | "with" | "without">("all");
+  const [sortOption, setSortOption] = useState<"oldest" | "newest" | "alpha">("newest");
+  const [sortOpen, setSortOpen] = useState<boolean>(false);
 
   const [createdOpen, setCreatedOpen] = useState<boolean>(false);
   const [modifiedOpen, setModifiedOpen] = useState<boolean>(false);
@@ -79,6 +81,14 @@ export default function MyNotes() {
           } else if (actionFilter === "without") {
             filtered = filtered.filter(n => n.action_items.trim().length === 0);
           }
+          // Apply sorting
+          if (sortOption === "oldest") {
+            filtered.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          } else if (sortOption === "newest") {
+            filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          } else if (sortOption === "alpha") {
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+          }
           setNotes(filtered);
         })
         .catch(() => console.error("Failed to search notes"));
@@ -118,6 +128,14 @@ export default function MyNotes() {
           } else if (actionFilter === "without") {
             filtered = filtered.filter(n => n.action_items.trim().length === 0);
           }
+          // Apply sorting
+          if (sortOption === "oldest") {
+            filtered.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          } else if (sortOption === "newest") {
+            filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          } else if (sortOption === "alpha") {
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+          }
           setNotes(filtered);
         })
         .catch(() => console.error("Failed to fetch tagged notes"));
@@ -156,11 +174,19 @@ export default function MyNotes() {
           } else if (actionFilter === "without") {
             filtered = filtered.filter(n => n.action_items.trim().length === 0);
           }
+          // Apply sorting
+          if (sortOption === "oldest") {
+            filtered.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          } else if (sortOption === "newest") {
+            filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          } else if (sortOption === "alpha") {
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+          }
           setNotes(filtered);
         })
         .catch(() => console.error("Failed to fetch notes"));
     }
-  }, [searchQuery, selectedTags, createdOn, modifiedOn, actionFilter]);
+  }, [searchQuery, selectedTags, createdOn, modifiedOn, actionFilter, sortOption]);
 
   const deleteNote = async (id: number) => {
     const res = await fetch(`http://localhost:8000/notes/${id}`, {
@@ -210,6 +236,34 @@ export default function MyNotes() {
         {/* Left Navigation Pane */}
         {sidebarOpen && (
           <aside className="w-64 bg-white border-r h-full sticky top-0 p-4 overflow-visible relative z-10">
+            {/* Sort Section */}
+            <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Sort</h3>
+            <div className="space-y-4 mb-6">
+              <button
+                onClick={() => setSortOption("oldest")}
+                className={`w-full text-left px-3 py-2 rounded-md hover:bg-gray-200 ${
+                  sortOption === "oldest" ? "bg-gray-200" : "bg-gray-100"
+                }`}
+              >
+                Oldest
+              </button>
+              <button
+                onClick={() => setSortOption("newest")}
+                className={`w-full text-left px-3 py-2 rounded-md hover:bg-gray-200 ${
+                  sortOption === "newest" ? "bg-gray-200" : "bg-gray-100"
+                }`}
+              >
+                Newest
+              </button>
+              <button
+                onClick={() => setSortOption("alpha")}
+                className={`w-full text-left px-3 py-2 rounded-md hover:bg-gray-200 ${
+                  sortOption === "alpha" ? "bg-gray-200" : "bg-gray-100"
+                }`}
+              >
+                Name (A-Z)
+              </button>
+            </div>
             <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Filters</h3>
             <div ref={filterRef} className="relative">
               <button

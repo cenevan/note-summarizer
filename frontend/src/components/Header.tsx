@@ -80,7 +80,7 @@ const Header: React.FC = () => {
           whileTap={{ scale: 0.95 }}
         >
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            🧠 <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-blue-400">Note AI</span>
+            🧠 <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-blue-400">SmartNotes</span>
           </Link>
         </motion.div>
         <nav className="flex gap-2">

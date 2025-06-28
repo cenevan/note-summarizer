@@ -61,7 +61,7 @@ const fetchAiResults = async (weekItems: string, apiKey: string) => {
   const { text: itemsText } = await generateText({
     model: provider("gpt-4o-mini"),
     system:
-      "Consolidate the following list of action items into a concise bullet list without numbering, keeping the most critical action items and limiting to 10 bullet points. Each item should start with a bullet point (•) and be no longer than 25 words.",
+      "Consolidate the following list of action items into a concise bullet list without numbering, keeping the most critical action items and limiting to 10 bullet points. Each item should start with a bullet point (•) and be no longer than 20 words.",
     prompt: weekItems
   });
   // extract keywords
