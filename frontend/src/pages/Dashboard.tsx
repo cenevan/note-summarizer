@@ -300,11 +300,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <section className="col-span-2 space-y-6">
             {/* Recently Modified Notes */}
-            <motion.div
-              whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
-              transition={{ duration: 0.3 }}
-              className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]"
-            >
+            <motion.div className="bg-white p-6 rounded-lg shadow-lg border-t-4 border-[#001f3f]">
               <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
                 <DocumentTextIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
                 Recently Modified
@@ -322,8 +318,6 @@ const Dashboard: React.FC = () => {
                   <motion.div
                     key={note.id}
                     variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
                     <NoteCard
                       noteId={note.id}
