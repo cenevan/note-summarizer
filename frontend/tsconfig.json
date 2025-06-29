@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
     // "jsx": "preserve",                                /* Specify what JSX code is generated. */
     // "libReplacement": true,                           /* Enable lib replacement. */
