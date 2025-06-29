@@ -1,3 +1,4 @@
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon, CheckIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
@@ -72,7 +73,7 @@ const NoteCard: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/users/me", {
+    fetch(`${API_URL}/users/me`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -91,7 +92,7 @@ const NoteCard: React.FC<Props> = ({
       setTags(tagsProp);
     } else {
       console.log("Fetching tags for noteId:", noteId);
-      fetch(`http://localhost:8000/tags/${noteId}`, {
+      fetch(`${API_URL}/tags/${noteId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
@@ -103,7 +104,7 @@ const NoteCard: React.FC<Props> = ({
   }, [noteId, tagsProp]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/notes/${noteId}`, {
+    fetch(`${API_URL}/notes/${noteId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -119,7 +120,7 @@ const NoteCard: React.FC<Props> = ({
   }, [noteId]);
 
   const changeName = async (editedName: string) => {
-    const res = await fetch(`http://localhost:8000/notes/${noteId}/name`, {
+    const res = await fetch(`${API_URL}/notes/${noteId}/name`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -199,7 +200,7 @@ const NoteCard: React.FC<Props> = ({
                   onClick={async (e) => {
                     e.stopPropagation();
                     try {
-                      const response = await fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+                      const response = await fetch(`${API_URL}/notes/${noteId}/tags/${tag.id}`, {
                         method: "DELETE",
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -309,14 +310,14 @@ const NoteCard: React.FC<Props> = ({
                   e.stopPropagation();
                   try {
                     await Promise.all(selectedTags.map(tag =>
-                      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+                      fetch(`${API_URL}/notes/${noteId}/tags/${tag.id}`, {
                         method: "POST",
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem("token")}`
                         }
                       })
                     ));
-                    const updated = await fetch(`http://localhost:8000/tags/${noteId}`, {
+                    const updated = await fetch(`${API_URL}/tags/${noteId}`, {
                       headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                       }
@@ -365,14 +366,14 @@ const NoteCard: React.FC<Props> = ({
                   e.stopPropagation();
                   try {
                     await Promise.all(selectedTags.map(tag =>
-                      fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+                      fetch(`${API_URL}/notes/${noteId}/tags/${tag.id}`, {
                         method: "POST",
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem("token")}`
                         }
                       })
                     ));
-                    const updated = await fetch(`http://localhost:8000/tags/${noteId}`, {
+                    const updated = await fetch(`${API_URL}/tags/${noteId}`, {
                       headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                       }

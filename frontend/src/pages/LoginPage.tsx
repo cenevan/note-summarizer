@@ -11,6 +11,8 @@ import {
   EyeSlashIcon
 } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 export default function LoginPage() {
   const [loginMethod, setLoginMethod] = useState<"email" | "username">("email");
   const [identifier, setIdentifier] = useState("");
@@ -27,7 +29,7 @@ export default function LoginPage() {
     form.append("username", identifier); 
     form.append("password", password);
 
-    const response = await fetch("http://localhost:8000/token", {
+    const response = await fetch(`${API_URL}/token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

@@ -29,6 +29,8 @@ import {
   Legend
 } from "recharts";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 interface Tag {
   id: number;
   name: string;
@@ -123,7 +125,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
-    fetch("http://localhost:8000/users/me", {
+    fetch(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -136,7 +138,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
-    fetch("http://localhost:8000/notes/", {
+    fetch(`${API_URL}/notes/`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -157,7 +159,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
-    fetch("http://localhost:8000/tags/", {
+    fetch(`${API_URL}/tags/`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -168,7 +170,7 @@ const Dashboard: React.FC = () => {
   // Removed old activityData state/effect (now handled below)
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
-    fetch("http://localhost:8000/users/me/usage", {
+    fetch(`${API_URL}/users/me/usage`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -328,17 +330,17 @@ const Dashboard: React.FC = () => {
                       name={note.name}
                       summary={note.summary}
                       actionItems={note.action_items}
-                      onDelete={async (id: number) => {
-                        const res = await fetch(`http://localhost:8000/notes/${id}`, {
-                          method: "DELETE",
-                          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-                        });
-                        if (res.ok) {
-                          setRecentNotes(prev => prev.filter(n => n.id !== id));
-                        } else {
-                          alert("Failed to delete note.");
-                        }
-                      }}
+                    onDelete={async (id: number) => {
+                      const res = await fetch(`${API_URL}/notes/${id}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                      });
+                      if (res.ok) {
+                        setRecentNotes(prev => prev.filter(n => n.id !== id));
+                      } else {
+                        alert("Failed to delete note.");
+                      }
+                    }}
                       expandLink={`/notes/${note.id}`}
                     />
                   </motion.div>

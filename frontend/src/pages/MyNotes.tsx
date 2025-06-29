@@ -10,6 +10,8 @@ import {
   ChevronDownIcon
 } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 interface Note {
   id: number;
   name: string;
@@ -47,7 +49,7 @@ export default function MyNotes() {
     const token = localStorage.getItem("token") || "";
     if (searchQuery.trim() !== "") {
       // Search endpoint
-      fetch(`http://localhost:8000/notes/search/?query=${encodeURIComponent(searchQuery)}`, {
+      fetch(`${API_URL}/notes/search/?query=${encodeURIComponent(searchQuery)}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -94,7 +96,7 @@ export default function MyNotes() {
         .catch(() => console.error("Failed to search notes"));
     } else if (selectedTags.length > 0) {
       const query = selectedTags.map(tag => `tags=${encodeURIComponent(tag.name)}`).join("&");
-      fetch(`http://localhost:8000/notes/tags/?${query}`, {
+      fetch(`${API_URL}/notes/tags/?${query}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -140,7 +142,7 @@ export default function MyNotes() {
         })
         .catch(() => console.error("Failed to fetch tagged notes"));
     } else {
-      fetch("http://localhost:8000/notes/", {
+      fetch(`${API_URL}/notes/`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -189,7 +191,7 @@ export default function MyNotes() {
   }, [searchQuery, selectedTags, createdOn, modifiedOn, actionFilter, sortOption]);
 
   const deleteNote = async (id: number) => {
-    const res = await fetch(`http://localhost:8000/notes/${id}`, {
+    const res = await fetch(`${API_URL}/notes/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`

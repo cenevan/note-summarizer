@@ -1,5 +1,8 @@
-import React from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
 const AuthContext = createContext({
   isLoggedIn: false,
@@ -7,7 +10,7 @@ const AuthContext = createContext({
   isAuthInitialized: false,
 });
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 

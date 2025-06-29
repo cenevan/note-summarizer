@@ -5,6 +5,8 @@ import {
   PlusCircleIcon
 } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 interface Tag {
   id: number;
   name: string;
@@ -23,7 +25,7 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/tags/", {
+    fetch(`${API_URL}/tags/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -54,7 +56,7 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
       color: newTagColor,
     });
 
-    fetch("http://localhost:8000/tags/", {
+    fetch(`${API_URL}/tags/`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
@@ -109,7 +111,7 @@ const TagSelector: React.FC<Props> = ({ selectedTags, setSelectedTags }) => {
               onClick={async (e) => {
                 e.stopPropagation();
                 try {
-                  const response = await fetch(`http://localhost:8000/tags/${tag.id}`, {
+                  const response = await fetch(`${API_URL}/tags/${tag.id}`, {
                     method: "DELETE",
                     headers: {
                       Authorization: `Bearer ${localStorage.getItem("token")}`

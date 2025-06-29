@@ -18,6 +18,8 @@ import {
   CurrencyDollarIcon
 } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 interface Note {
   id: number;
   name: string;
@@ -68,7 +70,7 @@ export default function DisplayNote() {
       console.error("Note is null, cannot change name");
       return;
     }
-    const res = await fetch(`http://localhost:8000/notes/${note.id}/name`, {
+    const res = await fetch(`${API_URL}/notes/${note.id}/name`, {
       method: "PUT",
       headers: { 
         "Content-Type": "application/json",
@@ -88,7 +90,7 @@ export default function DisplayNote() {
   useEffect(() => {
     console.log("Fetching note with id:", id);
 
-    fetch(`http://localhost:8000/notes/${id}`, {
+    fetch(`${API_URL}/notes/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -106,7 +108,7 @@ export default function DisplayNote() {
         setLastModified(new Date(data.updated_at).toLocaleString());
         setLoading(false);
 
-        fetch(`http://localhost:8000/tags/${id}`, {
+        fetch(`${API_URL}/tags/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }
@@ -123,7 +125,7 @@ export default function DisplayNote() {
   }, [id]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/users/me/usage`, {
+    fetch(`${API_URL}/users/me/usage`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -219,7 +221,7 @@ export default function DisplayNote() {
                 onClick={async (e) => {
                   e.stopPropagation();
                   try {
-                    const response = await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
+                const response = await fetch(`${API_URL}/notes/${note.id}/tags/${tag.id}`, {
                       method: "DELETE",
                       headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -259,14 +261,14 @@ export default function DisplayNote() {
             onClick={async () => {
               try {
                 for (const tag of selectedTags) {
-                  await fetch(`http://localhost:8000/notes/${note.id}/tags/${tag.id}`, {
+                  await fetch(`${API_URL}/notes/${note.id}/tags/${tag.id}`, {
                     method: "POST",
                     headers: {
                       Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                   });
                 }
-                const tagsRes = await fetch(`http://localhost:8000/tags/${note.id}`, {
+                const tagsRes = await fetch(`${API_URL}/tags/${note.id}`, {
                   headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                   }
@@ -345,7 +347,7 @@ export default function DisplayNote() {
                 <div className="space-x-4">
                   <button
                     onClick={async () => {
-                      const res = await fetch(`http://localhost:8000/notes/${note.id}`, {
+                      const res = await fetch(`${API_URL}/notes/${note.id}`, {
                         method: "PUT",
                         headers: { 
                           "Content-Type": "application/json",

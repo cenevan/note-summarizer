@@ -14,7 +14,10 @@ import {
   ClockIcon,
   PhotoIcon
 } from "@heroicons/react/24/outline";
+
 import { DocumentIcon } from "@heroicons/react/24/outline";
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 interface Result {
   id: number;
@@ -69,7 +72,7 @@ export default function UploadPage() {
     });
 
     try {
-      const res = await fetch("http://localhost:8000/upload/", {
+      const res = await fetch(`${API_URL}/upload/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -93,7 +96,7 @@ export default function UploadPage() {
 
       if (noteId) {
         for (const tag of selectedTags) {
-          await fetch(`http://localhost:8000/notes/${noteId}/tags/${tag.id}`, {
+          await fetch(`${API_URL}/notes/${noteId}/tags/${tag.id}`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -221,7 +224,7 @@ export default function UploadPage() {
                 actionItems={result.action_items}
                 tagsProp={selectedTags}
                 onDelete={async (id: number) => {
-                  const res = await fetch(`http://localhost:8000/notes/${id}`, {
+                  const res = await fetch(`${API_URL}/notes/${id}`, {
                     method: 'DELETE',
                     headers: {
                       Authorization: `Bearer ${localStorage.getItem("token")}`

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
 import {
   UserCircleIcon,
   ArrowLeftOnRectangleIcon,
@@ -10,6 +11,8 @@ import {
   ArrowUpTrayIcon,
   DocumentTextIcon
 } from "@heroicons/react/24/outline";
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 const Header: React.FC = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -26,7 +29,7 @@ const Header: React.FC = () => {
       if (!isLoggedIn) return;
       const token = localStorage.getItem("token");
       if (token) {
-        const res = await fetch("http://localhost:8000/users/me", {
+        const res = await fetch(`${API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

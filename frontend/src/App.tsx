@@ -2,17 +2,17 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
-import UploadPage from "./pages/UploadPage.tsx";
-import MyNotes from "./pages/MyNotes.tsx";
-import DisplayNote from "./pages/DisplayNote.tsx";
-import Header from "./components/Header.tsx";
-import Footer from "./components/Footer.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
-import SignupPage from "./pages/SignUpPage.tsx";
+import UploadPage from "./pages/UploadPage";
+import MyNotes from "./pages/MyNotes";
+import DisplayNote from "./pages/DisplayNote";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignUpPage";
 import Profile from "./pages/Profile";
-import LandingPage from "./pages/LandingPage.tsx";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./context/ProtectedRoute.tsx";
+import ProtectedRoute from "./context/ProtectedRoute";
 
 function App() {
   const { isLoggedIn, isAuthInitialized } = useAuth();

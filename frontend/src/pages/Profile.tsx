@@ -12,6 +12,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 export default function Profile() {
   const [user, setUser] = useState({ username: "", email: "", openai_api_key: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +44,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       if (token) {
-        const res = await fetch("http://localhost:8000/users/me", {
+        const res = await fetch(`${API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,21 +89,21 @@ export default function Profile() {
     let body: any = {};
     let successMsg = "Updated successfully.";
     if (field === "username") {
-      url = "http://localhost:8000/users/me/username";
+      url = `${API_URL}/users/me/username`;
       body = { new_username: formData.username };
       if (!formData.username.trim()) {
         setFeedback(prev => ({ ...prev, username: "Username cannot be empty." }));
         return;
       }
     } else if (field === "email") {
-      url = "http://localhost:8000/users/me/email";
+      url = `${API_URL}/users/me/email`;
       body = { new_email: formData.email };
       if (!formData.email.trim()) {
         setFeedback(prev => ({ ...prev, email: "Email cannot be empty." }));
         return;
       }
     } else if (field === "password") {
-      url = "http://localhost:8000/users/me/password";
+      url = `${API_URL}/users/me/password`;
       body = { old_password: formData.currentPassword,
         new_password: formData.newPassword };
       if (!formData.currentPassword) {
@@ -113,7 +115,7 @@ export default function Profile() {
         return;
       }
     } else if (field === "apiKey") {
-      url = "http://localhost:8000/users/me/api-key";
+      url = `${API_URL}/users/me/api-key`;
       body = { new_key: formData.apiKey };
       // apiKey can be empty (to remove)
     }
@@ -134,7 +136,7 @@ export default function Profile() {
           localStorage.setItem("token", data.access_token);
         }
         // Use the latest token for fetching user info
-        const refreshed = await fetch("http://localhost:8000/users/me", {
+        const refreshed = await fetch(`${API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token") || token}`,
           },

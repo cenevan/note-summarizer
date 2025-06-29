@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 const ProtectedRoute: React.FC = () => {
   const [isValid, setIsValid] = useState<boolean | null>(null);
 
@@ -10,7 +12,7 @@ const ProtectedRoute: React.FC = () => {
       setIsValid(false);
       return;
     }
-    fetch("http://localhost:8000/users/me", {
+    fetch(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {
