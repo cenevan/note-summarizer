@@ -4,9 +4,18 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       libmagic1 libmagic-dev default-jre-headless \
+      curl \
+      ca-certificates \
       tesseract-ocr && \
     rm -rf /var/lib/apt/lists/*
 COPY backend/ /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Download Apache Tika Server
+ARG TIKA_VERSION=2.9.0
+RUN curl -fSL https://repo1.maven.org/maven2/org/apache/tika/tika-server-standard/${TIKA_VERSION}/tika-server-standard-${TIKA_VERSION}.jar -o /app/tika-server.jar
+
+# Expose Tika server port
+EXPOSE 9998
+
+CMD ["sh", "-c", "java -jar /app/tika-server.jar -p 9998 & uvicorn app.main:app --host 0.0.0.0 --port 8000"]
