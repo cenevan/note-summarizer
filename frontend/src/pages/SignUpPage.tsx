@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -19,14 +18,18 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [openaiKey, setOpenaiKey] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { setIsLoggedIn } = useAuth();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setIsLoading(true);
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      setIsLoading(false);
       return;
     }
 
@@ -45,6 +48,7 @@ export default function SignupPage() {
 
     if (!response.ok) {
       setError(data.detail || "Signup failed. Please try again.");
+      setIsLoading(false);
       return;
     }
 
@@ -52,6 +56,7 @@ export default function SignupPage() {
     if (data.access_token) {
       localStorage.setItem("token", data.access_token);
       setIsLoggedIn(true);
+      setIsLoading(false);
       navigate("/");
     }
   };
@@ -124,10 +129,20 @@ export default function SignupPage() {
 
         <button
           type="submit"
+          disabled={isLoading}
           className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition flex items-center justify-center gap-2"
         >
-          <ArrowRightCircleIcon className="w-5 h-5" />
-          Sign Up
+          {isLoading ? (
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          ) : (
+            <>
+              <ArrowRightCircleIcon className="w-5 h-5" />
+              Sign Up
+            </>
+          )}
         </button>
       </form>
     </div>
