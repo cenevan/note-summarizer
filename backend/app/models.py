@@ -51,7 +51,7 @@ class ApiUsage(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    note_id = Column(Integer, ForeignKey("notes.id"), nullable=False)
+    note_id = Column(Integer, ForeignKey("notes.id"), nullable=True)
     user = relationship("User", back_populates="api_usage")
     note = relationship("Note", back_populates="api_usage")
     usage_date = Column(String, index=True)
