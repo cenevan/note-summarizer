@@ -7,11 +7,12 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.database import get_db
 from app.models import User
 from sqlalchemy.orm import Session
+import os
 
-# Configuration — ideally move to environment variables
-SECRET_KEY = "super-secret"  # replace this with os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+# Configuration from environment (with sensible defaults)
+SECRET_KEY = os.getenv("SECRET_KEY", "super-secret")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

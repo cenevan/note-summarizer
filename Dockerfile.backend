@@ -18,4 +18,4 @@ RUN curl -fSL https://repo1.maven.org/maven2/org/apache/tika/tika-server-standar
 # Expose Tika server port
 EXPOSE 9998
 
-CMD ["sh", "-c", "java -jar /app/tika-server.jar -p 9998 & uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "alembic upgrade head && java -jar /app/tika-server.jar -p 9998 & uvicorn app.main:app --host 0.0.0.0 --port 8000"]
