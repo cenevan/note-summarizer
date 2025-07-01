@@ -58,10 +58,13 @@ interface ApiUsageEntry {
 
 // Fetcher for AI results using OpenAI and generateText
 const fetchAiResults = async (weekItems: string, apiKey: string) => {
+  if (weekItems.trim() === "") {
+    return { itemsText: "No Action Items Found", keywordsText: "No Keywords Found" };
+  }
   const provider = createOpenAI({ apiKey });
   // consolidate action items
   const { text: itemsText } = await generateText({
-    model: provider("gpt-4o-mini"),
+    model: provider("gpt-4.1-nano"),
     system:
       "Consolidate the following list of action items into a concise bullet list without numbering, keeping the most critical action items and limiting to 10 bullet points. Each item should start with a bullet point (•) and be no longer than 20 words.",
     prompt: weekItems
@@ -69,7 +72,7 @@ const fetchAiResults = async (weekItems: string, apiKey: string) => {
   // extract keywords
   const keywordsPrompt = `Extract the top 5 most important keywords or short phrases (comma-separated) from the following action items:\n${weekItems}`;
   const { text: keywordsText } = await generateText({
-    model: provider("gpt-4o-mini"),
+    model: provider("gpt-4.1-nano"),
     system: "You are an AI assistant that extracts keywords.",
     prompt: keywordsPrompt
   });

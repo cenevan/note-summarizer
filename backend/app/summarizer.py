@@ -9,13 +9,13 @@ def summarize_text(text: str, user_openai_api_key: str, include_action_items: bo
     try:
         if include_action_items:
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4.1-nano",
                 messages=[
                     {
                         "role": "system",
                         "content": (
                             "Summarize this note clearly and concisely. "
-                            "Then, extract a list of action items and follow the response format strictly. "
+                            "Then, extract a list of action items and follow the response format strictly. Do not number the action items."
                             "Format the response as:\n\n"
                             "Summary:\n<summary here>\n\n"
                             "Action Items:\n- item 1\n- item 2\n- item 3"
@@ -27,7 +27,7 @@ def summarize_text(text: str, user_openai_api_key: str, include_action_items: bo
             )
         else:
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4.1-nano",
                 messages=[
                     {
                         "role": "system",

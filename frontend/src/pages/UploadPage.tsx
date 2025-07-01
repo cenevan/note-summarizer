@@ -83,7 +83,7 @@ export default function UploadPage() {
       if (!res.ok) {
         const errorData = await res.json();
         if (errorData.detail?.toLowerCase().includes("openai api key")) {
-          throw new Error("Your OpenAI API key appears to be invalid or missing. Please check your profile settings.");
+          throw new Error("Your OpenAI API key appears to be invalid, missing, or lacking credits. Please check your profile settings or platform usage.");
         } else {
           throw new Error(errorData.detail || "Upload failed");
         }
