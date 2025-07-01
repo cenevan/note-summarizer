@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
   LineChart,
   BarChart,
+  ComposedChart,
   XAxis,
   YAxis,
   Tooltip,
@@ -28,6 +29,8 @@ import {
   Bar,
   Legend
 } from "recharts";
+import CalendarHeatmap from "react-calendar-heatmap";
+import "react-calendar-heatmap/dist/styles.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -201,7 +204,12 @@ const Dashboard: React.FC = () => {
       sums[date].output += u.output_tokens;
     });
     return Object.entries(sums)
-      .map(([date, vals]) => ({ date, input: vals.input, output: vals.output }))
+      .map(([date, vals]) => ({
+        date,
+        input: vals.input,
+        output: vals.output,
+        total: vals.input + vals.output
+      }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [apiUsage]);
 
@@ -214,6 +222,11 @@ const Dashboard: React.FC = () => {
     return apiUsage.reduce((sum, u) => sum + u.output_tokens, 0);
   }, [apiUsage]);
 
+  // Heatmap date range: past 10 months
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(endDate.getMonth() - 10);
+
   return (
     <>
       <motion.main
@@ -221,7 +234,7 @@ const Dashboard: React.FC = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-gray-100 min-h-screen p-8 font-sans"
+        className="bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen p-8 font-sans"
       >
         <motion.div
           whileHover={{ y: -5 }}
@@ -412,17 +425,28 @@ const Dashboard: React.FC = () => {
           >
             <h2 className="text-2xl font-extrabold text-[#001f3f] mb-4 uppercase tracking-wide flex items-center">
               <CalendarIcon className="w-5 h-5 mr-2 text-[#001f3f]" />
-              Queries Over Time
+              Upload Activity
             </h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={uploadActivityData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="#001f3f" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+            <CalendarHeatmap
+              startDate={startDate}
+              endDate={endDate}
+              values={uploadActivityData.map(d => ({ date: d.date, count: d.count }))}
+              classForValue={value => {
+                if (!value || value.count === 0) {
+                  return "color-empty";
+                }
+                // bucket counts into 1–4 for color intensity
+                const maxCount = uploadActivityData.reduce((max, d) => Math.max(max, d.count), 0);
+                const level = Math.min(4, Math.ceil(value.count / (maxCount / 4 || 1)));
+                return `color-github-${level}`;
+              }}
+              titleForValue={value => {
+                if (!value) return "No activity";
+                if (value.count === 0) return `No activity on ${value.date}`;
+                return `${value.date}: ${value.count} queries`;
+              }}
+              showWeekdayLabels
+            />
           </motion.div>
           <motion.div
             whileHover={{ scale: 1.02, boxShadow: "0px 8px 16px rgba(0,0,0,0.1)" }}
@@ -434,7 +458,7 @@ const Dashboard: React.FC = () => {
               Token Usage Over Time
             </h2>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={tokenUsageData}>
+              <ComposedChart data={tokenUsageData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -442,7 +466,8 @@ const Dashboard: React.FC = () => {
                 <Legend />
                 <Bar dataKey="input" stackId="a" fill="#001f3f" />
                 <Bar dataKey="output" stackId="a" fill="#004080" />
-              </BarChart>
+                <Line type="monotone" dataKey="total" dot={false} />
+              </ComposedChart>
             </ResponsiveContainer>
           </motion.div>
         </div>
