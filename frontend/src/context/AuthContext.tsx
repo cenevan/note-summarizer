@@ -10,6 +10,8 @@ const AuthContext = createContext({
   isAuthInitialized: false,
 });
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
@@ -25,7 +27,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       try {
-        const response = await fetch("http://localhost:8000/users/me", {
+        const response = await fetch(`${API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
