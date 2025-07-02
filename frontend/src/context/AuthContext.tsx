@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -38,11 +39,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } else {
           setIsLoggedIn(false);
           localStorage.removeItem("token");
+          if (response.status === 401 || response.status === 403) {
+            <Navigate to="/login" replace />;
+          }
         }
       } catch (error) {
         console.error("Auth check failed:", error);
         setIsLoggedIn(false);
         localStorage.removeItem("token");
+        <Navigate to="/login" replace />;
       } finally {
         setIsAuthInitialized(true);
       }
