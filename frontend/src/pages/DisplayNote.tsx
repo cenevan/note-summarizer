@@ -256,37 +256,39 @@ export default function DisplayNote() {
       {showTagSelector && (
         <div className="mb-6 border border-gray-200 bg-white p-4 rounded shadow">
           <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
-          <button
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md"
-            onClick={async () => {
-              try {
-                for (const tag of selectedTags) {
-                  await fetch(`${API_URL}/notes/${note.id}/tags/${tag.id}`, {
-                    method: "POST",
+          <div className="flex justify-center mt-4">
+            <button
+              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm"
+              onClick={async () => {
+                try {
+                  for (const tag of selectedTags) {
+                    await fetch(`${API_URL}/notes/${note.id}/tags/${tag.id}`, {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                      }
+                    });
+                  }
+                  const tagsRes = await fetch(`${API_URL}/tags/${note.id}`, {
                     headers: {
                       Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                   });
-                }
-                const tagsRes = await fetch(`${API_URL}/tags/${note.id}`, {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                  if (tagsRes.ok) {
+                    const updatedTags = await tagsRes.json();
+                    setTags(updatedTags);
                   }
-                });
-                if (tagsRes.ok) {
-                  const updatedTags = await tagsRes.json();
-                  setTags(updatedTags);
+                  setShowTagSelector(false);
+                  setSelectedTags([]);
+                } catch (error) {
+                  console.error("Failed to save tags:", error);
+                  alert("Something went wrong while saving tags. Please try again.");
                 }
-                setShowTagSelector(false);
-                setSelectedTags([]);
-              } catch (error) {
-                console.error("Failed to save tags:", error);
-                alert("Something went wrong while saving tags. Please try again.");
-              }
-            }}
-          >
-            Save Tags
-          </button>
+              }}
+            >
+              Save
+            </button>
+          </div>
         </div>
       )}
 
