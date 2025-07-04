@@ -1,13 +1,14 @@
 # AI Note Summarizer
 
 This project is a full-stack web application that allows users to upload notes, generate AI-powered summaries, and extract actionable items using OpenAI's API.
+Character recognition with Tesseract OCR allows multimodal support with images and rich text formats.
 
 ## Tech Stack
 
 - **Frontend:** React, Tailwind CSS, TypeScript
 - **Backend:** FastAPI (Python)
-- **Database:** PostgreSQL (via SQLAlchemy)
-- **AI Model:** OpenAI GPT-3.5 Turbo
+- **Database:** PostgreSQL (via SQLAlchemy), Alembic Database Migration
+- **AI Integration:** OpenAI GPT-4.1 Nano, Vercel AI SDK, Tesseract OCR
 - **Containerization:** Docker & Docker Compose
 
 ---
